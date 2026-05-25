@@ -1,58 +1,97 @@
 import { Router } from "express";
-import { places } from "../../data/memory.js";
+import { Op } from "sequelize";
+import { Place, Category, User } from "../../models/index.js";
 import { authenticate } from "../../middlewares/auth.middleware.js";
 import { cache, clearCache } from "../../middlewares/cache.middleware.js";
 
 const router = Router();
 
-router.get("/", cache(120), (req, res) => {
+router.get("/", cache(120), async (req, res) => {
     const page = Number(req.query.page || 1);
     const limit = Number(req.query.limit || 10);
     const categoryId = req.query.categoryId ? Number(req.query.categoryId) : null;
-    const search = req.query.search ? String(req.query.search).toLowerCase() : "";
+    const search = req.query.search ? String(req.query.search).trim() : "";
 
-    let filteredPlaces = places.filter((place) => place.status === "approved");
+    const where = { status: "approved" };
 
     if (categoryId) {
-        filteredPlaces = filteredPlaces.filter((place) => place.categoryId === categoryId);
+        where.categoryId = categoryId;
     }
 
     if (search) {
-        filteredPlaces = filteredPlaces.filter((place) => {
-        return (
-            place.title.toLowerCase().includes(search) ||
-            place.location.toLowerCase().includes(search)
-        );
-        });
+        where[Op.or] = [
+            { title: { [Op.like]: `%${search}%` } },
+            { location: { [Op.like]: `%${search}%` } }
+        ];
     }
 
-    const start = (page - 1) * limit;
-    const paginated = filteredPlaces.slice(start, start + limit);
+    try {
+        const { count, rows } = await Place.findAndCountAll({
+            where,
+            include: [
+                {
+                    model: Category,
+                    as: "category",
+                    attributes: ["id", "name"]
+                }
+            ],
+            order: [["createdAt", "DESC"]],
+            limit,
+            offset: (page - 1) * limit
+        });
 
-    return res.status(200).json({
-        page,
-        limit,
-        total: filteredPlaces.length,
-        data: paginated
-    });
+        return res.status(200).json({
+            page,
+            limit,
+            total: count,
+            data: rows
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error al obtener los lugares.",
+            error: error.message
+        });
+    }
 });
 
-router.get("/:id", (req, res) => {
+router.get("/:id", async (req, res) => {
     const id = Number(req.params.id);
-    const place = places.find((item) => item.id === id && item.status === "approved");
 
-    if (!place) {
-        return res.status(404).json({
-            message: "Lugar turístico no encontrado."
+    try {
+        const place = await Place.findOne({
+            where: { id, status: "approved" },
+            include: [
+                {
+                    model: Category,
+                    as: "category",
+                    attributes: ["id", "name"]
+                },
+                {
+                    model: User,
+                    as: "author",
+                    attributes: ["id", "name"]
+                }
+            ]
+        });
+
+        if (!place) {
+            return res.status(404).json({
+                message: "Lugar turístico no encontrado."
+            });
+        }
+
+        return res.status(200).json({
+            data: place
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error al obtener el lugar.",
+            error: error.message
         });
     }
-
-    return res.status(200).json({
-        data: place
-    });
 });
 
-router.post("/", authenticate, (req, res) => {
+router.post("/", authenticate, async (req, res) => {
     const { title, description, location, categoryId, type } = req.body;
 
     if (!title || !description || !location || !categoryId) {
@@ -61,26 +100,38 @@ router.post("/", authenticate, (req, res) => {
         });
     }
 
-    const newPlace = {
-        id: Date.now(),
-        title,
-        description,
-        location,
-        categoryId: Number(categoryId),
-        type: type || "lugar",
-        ratingAverage: 0,
-        status: "pending",
-        createdBy: req.user.id,
-        createdAt: new Date().toISOString()
-    };
+    try {
+        const categoryExists = await Category.findByPk(categoryId);
 
-    places.push(newPlace);
-    clearCache();
+        if (!categoryExists) {
+            return res.status(400).json({
+                message: "La categoría seleccionada no existe."
+            });
+        }
 
-    return res.status(201).json({
-        message: "Lugar enviado correctamente. Queda pendiente de aprobación.",
-        data: newPlace
-    });
+        const newPlace = await Place.create({
+            title,
+            description,
+            location,
+            categoryId: Number(categoryId),
+            type: type || "lugar",
+            ratingAverage: 0,
+            status: "pending",
+            userId: req.user.id
+        });
+
+        clearCache();
+
+        return res.status(201).json({
+            message: "Lugar enviado correctamente. Queda pendiente de aprobación.",
+            data: newPlace
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error al crear el lugar.",
+            error: error.message
+        });
+    }
 });
 
 export default router;

@@ -1,21 +1,13 @@
 import { Sequelize } from "sequelize";
 import "dotenv/config";
 
-const isProduction = process.env.NODE_ENV === "production";
+const defaultUrl = "mysql://root:@localhost:3306/turismove";
 
 export const sequelize = new Sequelize(
-    process.env.DATABASE_URL || "postgresql://postgres:postgres@localhost:5432/turismove",
+    process.env.DATABASE_URL || defaultUrl,
     {
-        dialect: "postgres",
-        logging: false,
-        dialectOptions: isProduction
-        ? {
-            ssl: {
-                require: true,
-                rejectUnauthorized: false
-            }
-        }
-        : {}
+        dialect: "mysql",
+        logging: false
     }
 );
 
@@ -25,12 +17,12 @@ export async function testDatabaseConnection() {
 
         return {
             connected: true,
-            message: "Conexión a PostgreSQL establecida correctamente."
+            message: "Conexión a MySQL establecida correctamente."
         };
     } catch (error) {
         return {
             connected: false,
-            message: "No se pudo conectar a PostgreSQL.",
+            message: "No se pudo conectar a MySQL.",
             error: error.message
         };
     }
