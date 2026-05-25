@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 import { env } from "../config/env.js";
-import { users } from "../data/memory.js";
+import { User } from "../models/index.js";
 
-export function authenticate(req, res, next) {
+export async function authenticate(req, res, next) {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -15,12 +15,12 @@ export function authenticate(req, res, next) {
 
     try {
         const payload = jwt.verify(token, env.jwtSecret);
-        const user = users.find((item) => item.id === payload.id);
+        const user = await User.findByPk(payload.id);
 
         if (!user) {
-        return res.status(401).json({
-            message: "No autorizado. Usuario no encontrado."
-        });
+            return res.status(401).json({
+                message: "No autorizado. Usuario no encontrado."
+            });
         }
 
         req.user = {
