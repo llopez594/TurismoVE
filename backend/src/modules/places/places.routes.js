@@ -11,6 +11,7 @@ router.get("/", cache(120), async (req, res) => {
     const limit = Number(req.query.limit || 10);
     const categoryId = req.query.categoryId ? Number(req.query.categoryId) : null;
     const search = req.query.search ? String(req.query.search).trim() : "";
+    const type = req.query.type || null;
 
     const where = { status: "approved" };
 
@@ -18,10 +19,15 @@ router.get("/", cache(120), async (req, res) => {
         where.categoryId = categoryId;
     }
 
+    if (type) {
+        where.type = type;
+    }
+
     if (search) {
         where[Op.or] = [
             { title: { [Op.like]: `%${search}%` } },
-            { location: { [Op.like]: `%${search}%` } }
+            { location: { [Op.like]: `%${search}%` } },
+            { address: { [Op.like]: `%${search}%` } }
         ];
     }
 
@@ -69,7 +75,7 @@ router.get("/:id", async (req, res) => {
                 {
                     model: User,
                     as: "author",
-                    attributes: ["id", "name"]
+                    attributes: ["id", "name", "avatar"]
                 }
             ]
         });
@@ -92,7 +98,18 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/", authenticate, async (req, res) => {
-    const { title, description, location, categoryId, type } = req.body;
+    const {
+        title,
+        description,
+        location,
+        address,
+        categoryId,
+        type,
+        cost,
+        checkIn,
+        checkOut,
+        services
+    } = req.body;
 
     if (!title || !description || !location || !categoryId) {
         return res.status(400).json({
@@ -113,8 +130,13 @@ router.post("/", authenticate, async (req, res) => {
             title,
             description,
             location,
+            address: address || null,
             categoryId: Number(categoryId),
             type: type || "lugar",
+            cost: cost ? Number(cost) : null,
+            checkIn: checkIn || null,
+            checkOut: checkOut || null,
+            services: services || null,
             ratingAverage: 0,
             status: "pending",
             userId: req.user.id
@@ -129,6 +151,88 @@ router.post("/", authenticate, async (req, res) => {
     } catch (error) {
         return res.status(500).json({
             message: "Error al crear el lugar.",
+            error: error.message
+        });
+    }
+});
+
+router.put("/:id", authenticate, async (req, res) => {
+    const id = Number(req.params.id);
+
+    try {
+        const place = await Place.findOne({
+            where: { id, userId: req.user.id }
+        });
+
+        if (!place) {
+            return res.status(404).json({
+                message: "Lugar no encontrado o no tienes permiso para editarlo."
+            });
+        }
+
+        const {
+            title,
+            description,
+            location,
+            address,
+            categoryId,
+            type,
+            cost,
+            checkIn,
+            checkOut,
+            services
+        } = req.body;
+
+        await place.update({
+            title: title || place.title,
+            description: description || place.description,
+            location: location || place.location,
+            address: address !== undefined ? address : place.address,
+            categoryId: categoryId ? Number(categoryId) : place.categoryId,
+            type: type || place.type,
+            cost: cost !== undefined ? Number(cost) : place.cost,
+            checkIn: checkIn !== undefined ? checkIn : place.checkIn,
+            checkOut: checkOut !== undefined ? checkOut : place.checkOut,
+            services: services !== undefined ? services : place.services
+        });
+
+        clearCache();
+
+        return res.status(200).json({
+            message: "Lugar actualizado correctamente.",
+            data: place
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error al actualizar el lugar.",
+            error: error.message
+        });
+    }
+});
+
+router.delete("/:id", authenticate, async (req, res) => {
+    const id = Number(req.params.id);
+
+    try {
+        const place = await Place.findOne({
+            where: { id, userId: req.user.id }
+        });
+
+        if (!place) {
+            return res.status(404).json({
+                message: "Lugar no encontrado o no tienes permiso para eliminarlo."
+            });
+        }
+
+        await place.destroy();
+        clearCache();
+
+        return res.status(200).json({
+            message: "Lugar eliminado correctamente."
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error al eliminar el lugar.",
             error: error.message
         });
     }

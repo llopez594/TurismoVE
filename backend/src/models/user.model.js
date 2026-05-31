@@ -27,6 +27,11 @@ export const User = sequelize.define(
             type: DataTypes.ENUM("user", "admin"),
             allowNull: false,
             defaultValue: "user"
+        },
+        avatar: {
+            type: DataTypes.STRING(50),
+            allowNull: true,
+            defaultValue: "avatar1.png"
         }
     },
     {
