@@ -21,10 +21,37 @@ export const Place = sequelize.define(
             type: DataTypes.STRING(180),
             allowNull: false
         },
+        address: {
+            type: DataTypes.STRING(255),
+            allowNull: true,
+            defaultValue: null
+        },
         type: {
             type: DataTypes.ENUM("lugar", "actividad"),
             allowNull: false,
             defaultValue: "lugar"
+        },
+        cost: {
+            type: DataTypes.DECIMAL(8, 2),
+            allowNull: true,
+            defaultValue: null
+        },
+        checkIn: {
+            type: DataTypes.STRING(10),
+            allowNull: true,
+            defaultValue: null,
+            field: "check_in"
+        },
+        checkOut: {
+            type: DataTypes.STRING(10),
+            allowNull: true,
+            defaultValue: null,
+            field: "check_out"
+        },
+        services: {
+            type: DataTypes.JSON,
+            allowNull: true,
+            defaultValue: null
         },
         coverImage: {
             type: DataTypes.STRING(255),

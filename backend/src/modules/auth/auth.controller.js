@@ -22,16 +22,23 @@ function publicUser(user) {
         name: user.name,
         email: user.email,
         role: user.role,
+        avatar: user.avatar || "avatar1.png",
         createdAt: user.createdAt
     };
 }
 
 export async function register(req, res) {
-    const { name, email, password } = req.body;
+    const { name, email, password, avatar } = req.body;
 
     if (!name || !email || !password) {
         return res.status(400).json({
             message: "Nombre, correo y contraseña son obligatorios."
+        });
+    }
+
+    if (password.length < 6) {
+        return res.status(400).json({
+            message: "La contraseña debe tener al menos 6 caracteres."
         });
     }
 
@@ -48,7 +55,8 @@ export async function register(req, res) {
             name,
             email,
             passwordHash: bcrypt.hashSync(password, 10),
-            role: "user"
+            role: "user",
+            avatar: avatar || "avatar1.png"
         });
 
         return res.status(201).json({
