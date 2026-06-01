@@ -3,9 +3,6 @@ import { Outlet } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 
-// AuthModal se importará cuando Carlos lo construya en Sprint 1
-// import AuthModal from "../auth/AuthModal";
-
 export default function Layout() {
     const [authOpen, setAuthOpen] = useState(false);
     const [authView, setAuthView] = useState("login");
@@ -33,12 +30,6 @@ export default function Layout() {
 
             <Footer />
 
-            {/* AuthModal se descomenta cuando Carlos termine Sprint 1 */}
-            {/* <AuthModal
-                isOpen={authOpen}
-                onClose={() => setAuthOpen(false)}
-                initialView={authView}
-            /> */}
         </div>
     );
 }
