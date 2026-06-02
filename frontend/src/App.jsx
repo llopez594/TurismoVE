@@ -13,7 +13,6 @@ export default function App() {
                 <Routes>
                     <Route path="/" element={<Layout />}>
 
-
                         <Route index element={<ComingSoon name="Home "/>} />
 
                         <Route path="buscar" element={<ComingSoon name="Buscar" />} />
