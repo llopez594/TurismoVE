@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import Layout from "./components/layout/Layout";
+import Home from "./pages/Home";
 
 function ComingSoon({ name }) {
 
@@ -14,7 +15,7 @@ export default function App() {
                     <Route path="/" element={<Layout />}>
 
 
-                        <Route index element={<ComingSoon name="Home "/>} />
+                        <Route index element={<Home />} />
 
                         <Route path="buscar" element={<ComingSoon name="Buscar" />} />
                         <Route path="lugares/:id" element={<ComingSoon name="Detalle" />} />
@@ -24,7 +25,7 @@ export default function App() {
 
                         <Route path="perfil" element={<ComingSoon name="Perfil" />} />
 
-  
+
                         <Route path="admin" element={<ComingSoon name="Admin" />} />
 
                         <Route path="*" element={<ComingSoon name="Página no encontrada" />} />
