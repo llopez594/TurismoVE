@@ -1,0 +1,64 @@
+import { useNavigate } from "react-router-dom";
+import { MapPin } from "lucide-react";
+
+export default function ExperienceCard({ experience }) {
+    const navigate = useNavigate();
+
+    const image = experience.coverImage || experience.cover_image || null;
+    const cost = experience.cost ? `$${Number(experience.cost).toFixed(0)}` : null;
+    const services = experience.services || [];
+
+    return (
+        <div className="exp-card" onClick={() => navigate(`/lugares/${experience.id}`)}>
+            <div className="exp-card__image">
+                {image ? (
+                    <img src={image} alt={experience.title} />
+                ) : (
+                    <div className="exp-card__placeholder" />
+                )}
+                <div className="exp-card__overlay" />
+                <div className="exp-card__content">
+                    <p className="exp-card__location">
+                        <MapPin size={12} /> {experience.location}
+                    </p>
+                    <h3 className="exp-card__title">{experience.title}</h3>
+                    {experience.description && (
+                        <p className="exp-card__desc">{experience.description}</p>
+                    )}
+                    {services.length > 0 && (
+                        <div className="exp-card__services">
+                            <span className="exp-card__services-label">Recomendaciones:</span>
+                            {services.slice(0, 3).map((s, i) => (
+                                <span key={i} className="exp-card__service-tag">{s}</span>
+                            ))}
+                        </div>
+                    )}
+                    <div className="exp-card__footer">
+                        {cost && <span className="exp-card__price">{cost} <small>/persona</small></span>}
+                        <span className="badge badge-exp">EXPERIENCIA</span>
+                    </div>
+                </div>
+            </div>
+
+            <style>{`
+                .exp-card { border-radius: var(--radius-lg); overflow: hidden; cursor: pointer; transition: all var(--transition-slow); }
+                .exp-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+                .exp-card__image { position: relative; height: 280px; overflow: hidden; }
+                .exp-card__image img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--transition-slow); }
+                .exp-card:hover .exp-card__image img { transform: scale(1.05); }
+                .exp-card__placeholder { width: 100%; height: 100%; background: #1C3A2A; }
+                .exp-card__overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,0.2) 100%); }
+                .exp-card__content { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; }
+                .exp-card__location { display: flex; align-items: center; gap: 4px; font-size: .72rem; color: #4DD9C0; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9); }
+                .exp-card__title { font-size: var(--font-size-lg); font-weight: 800; color: #fff; margin-bottom: 6px; line-height: 1.3; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9); }
+                .exp-card__desc { font-size: .8rem; color: rgba(255,255,255,0.85); line-height: 1.5; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8); }
+                .exp-card__services { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+                .exp-card__services-label { font-size: .72rem; color: rgba(255,255,255,0.6); }
+                .exp-card__service-tag { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.9); padding: 2px 8px; border-radius: var(--radius-full); font-size: .72rem; }
+                .exp-card__footer { display: flex; align-items: center; justify-content: space-between; }
+                .exp-card__price { font-size: var(--font-size-xl); font-weight: 800; color: #fff; }
+                .exp-card__price small { font-size: var(--font-size-sm); font-weight: 400; color: rgba(255,255,255,0.7); }
+            `}</style>
+        </div>
+    );
+}
