@@ -22,13 +22,13 @@ La arquitectura del proyecto busca separar claramente las responsabilidades entr
 flowchart TD
     A[Usuario / Navegador Web] --> B[Frontend React + Vite]
     B --> C[Backend API REST Node.js + Express]
-    C --> D[(Base de Datos PostgreSQL)]
+    C --> D[(Base de Datos MySQL)]
     C --> E[Autenticación JWT]
     C --> F[Caché en memoria]
-    C --> G[Servicio futuro de IA]
+    C --> G[Servicio de IA]
 
     B -->|HTTP / JSON| C
-    C -->|Consultas SQL futuras| D
+    C -->|Sequelize ORM / SQL| D
     C -->|Validación de token| E
     C -->|Categorías y lugares frecuentes| F
 ```
@@ -67,9 +67,9 @@ Responsabilidades principales:
 
 ### 4.3 Base de datos
 
-La base de datos propuesta para la versión final será **PostgreSQL**.
+La base de datos actual del backend es **MySQL**, gestionada mediante **Sequelize** y **Sequelize CLI**.
 
-Entidades principales previstas:
+Entidades principales:
 
 - Usuarios.
 - Categorías.
@@ -78,7 +78,7 @@ Entidades principales previstas:
 - Fotos.
 - Roles.
 
-En esta primera etapa del proyecto, el backend usa datos en memoria para demostrar la estructura funcional de la API. Posteriormente se reemplazará por conexión real a base de datos.
+El backend cuenta con conexión real a base de datos, modelos Sequelize, migraciones y seeders. El archivo `src/data/memory.js` queda como referencia histórica y no representa la fuente principal de datos.
 
 ### 4.4 Caché
 
@@ -172,8 +172,8 @@ La propuesta de deploy es:
 | ------------- | ---------------------------------------- |
 | Frontend      | Vercel o Netlify                         |
 | Backend       | Render o Railway                         |
-| Base de datos | PostgreSQL en Render, Railway o Supabase |
+| Base de datos | MySQL en AlwaysData, Railway u otro proveedor compatible |
 
 ## 10. Conclusión
 
-La arquitectura de TurismoVE cumple con la separación entre frontend y backend, define una API REST modular, incluye autenticación/autorización, aplica caché básico y deja preparada la base para deploy y conexión futura con base de datos.
+La arquitectura de TurismoVE cumple con la separación entre frontend y backend, define una API REST modular, incluye autenticación/autorización, aplica caché básico y ya cuenta con conexión a MySQL mediante Sequelize.
