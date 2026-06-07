@@ -46,7 +46,18 @@ export async function getPlaces(req, res) {
             page,
             limit,
             total: count,
-            data: rows
+            data: rows.map((place) => {
+                const item = place.get({ plain: true });
+
+                return {
+                    ...item,
+                    services: Array.isArray(item.services)
+                        ? item.services
+                        : item.services
+                            ? JSON.parse(item.services)
+                            : []
+        };
+    })
         });
     } catch (error) {
         return res.status(500).json({
