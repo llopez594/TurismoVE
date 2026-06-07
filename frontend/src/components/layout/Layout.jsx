@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import AuthModal from "../auth/AuthModal";
 
 export default function Layout() {
     const [authOpen, setAuthOpen] = useState(false);
@@ -19,17 +20,16 @@ export default function Layout() {
 
     return (
         <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-            <Navbar
-                onLoginClick={openLogin}
-                onRegisterClick={openRegister}
-            />
-
+            <Navbar onLoginClick={openLogin} onRegisterClick={openRegister} />
             <main style={{ flex: 1 }}>
                 <Outlet />
             </main>
-
             <Footer />
-
+            <AuthModal
+                isOpen={authOpen}
+                onClose={() => setAuthOpen(false)}
+                initialView={authView}
+            />
         </div>
     );
 }
