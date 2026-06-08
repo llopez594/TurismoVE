@@ -12,7 +12,7 @@ La arquitectura de despliegue separa el frontend y el backend para facilitar man
 | ------------- | ----------------- | -------------------------- |
 | Frontend      | React + Vite      | Vercel o Netlify           |
 | Backend       | Node.js + Express | Render o Railway           |
-| Base de datos | PostgreSQL        | Render, Railway o Supabase |
+| Base de datos | MySQL             | AlwaysData, Railway u otro proveedor compatible |
 
 ## 3. Deploy del backend en Render
 
@@ -38,6 +38,7 @@ PORT=4000
 JWT_SECRET=clave_segura_para_produccion
 NODE_ENV=production
 FRONTEND_URL=https://url-del-frontend.vercel.app
+DATABASE_URL=mysql://USUARIO:PASSWORD@HOST:3306/NOMBRE_BASE_DATOS
 ```
 
 Nota: `JWT_SECRET` debe ser reemplazado por una clave segura.
@@ -85,7 +86,7 @@ VITE_API_URL=https://url-del-backend.onrender.com/api
 flowchart LR
     A[Usuario] --> B[Frontend en Vercel]
     B --> C[Backend en Render]
-    C --> D[(PostgreSQL)]
+    C --> D[(MySQL)]
 ```
 
 ## 6. Consideraciones para producción
@@ -108,7 +109,7 @@ Para producción se deben considerar los siguientes puntos:
 | Variables de entorno definidas | Sí        |
 | Endpoint health creado         | Sí        |
 | Frontend preparado             | Pendiente |
-| Base de datos externa          | Pendiente |
+| Base de datos MySQL externa    | Preparada |
 | Deploy final                   | Pendiente |
 
 ## 8. Comandos locales del backend

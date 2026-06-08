@@ -119,10 +119,19 @@ backend/
 │   │   │   ├── auth.controller.js
 │   │   │   └── auth.routes.js
 │   │   ├── categories/
+│   │   │   ├── categories.controller.js
 │   │   │   └── categories.routes.js
 │   │   ├── places/
+│   │   │   ├── places.controller.js
 │   │   │   └── places.routes.js
+│   │   ├── reviews/
+│   │   │   ├── reviews.controller.js
+│   │   │   └── reviews.routes.js
+│   │   ├── ai/
+│   │   │   ├── ai.controller.js
+│   │   │   └── ai.routes.js
 │   │   └── admin/
+│   │       ├── admin.controller.js
 │   │       └── admin.routes.js
 │   ├── app.js                      Configuración de Express
 │   ├── routes.js                   Registro de rutas
@@ -152,13 +161,17 @@ backend/
 | GET    | `/api/categories`      | Listar categorías          |
 | GET    | `/api/places`          | Listar lugares aprobados   |
 | GET    | `/api/places/:id`      | Detalle de un lugar        |
+| GET    | `/api/places/:id/reviews` | Listar reseñas de un lugar |
+| POST   | `/api/ai/chat`         | Chat turístico con IA      |
 
 ### Requieren JWT
 
-| Método | Endpoint       | Descripción                   |
-| ------ | -------------- | ----------------------------- |
-| GET    | `/api/auth/me` | Datos del usuario autenticado |
-| POST   | `/api/places`  | Publicar un nuevo lugar       |
+| Método | Endpoint                               | Descripción                   |
+| ------ | -------------------------------------- | ----------------------------- |
+| GET    | `/api/auth/me`                         | Datos del usuario autenticado |
+| POST   | `/api/places`                          | Publicar un nuevo lugar       |
+| POST   | `/api/places/:id/reviews`              | Publicar una reseña           |
+| DELETE | `/api/places/:id/reviews/:reviewId`    | Eliminar una reseña propia    |
 
 ### Requieren JWT + rol admin
 
@@ -200,8 +213,8 @@ El proyecto usa MySQL con Sequelize. Las tablas son:
 - `users` — Usuarios registrados
 - `categories` — Categorías turísticas
 - `places` — Lugares y actividades turísticas
-- `reviews` — Reseñas y calificaciones *(endpoints pendientes)*
-- `photos` — Fotos de lugares *(endpoints pendientes)*
+- `reviews` — Reseñas y calificaciones
+- `photos` — Fotos de lugares *(modelo y tabla disponibles; endpoints pendientes)*
 
 Las migraciones y seeders usan la extensión `.cjs` porque el proyecto tiene `"type": "module"` en `package.json` y Sequelize CLI no soporta ES Modules nativos.
 
@@ -241,6 +254,6 @@ FRONTEND_URL=https://<url-del-frontend>
 | Lugares (listar, detalle, crear, aprobar, rechazar) | ✅ Completo  |
 | Base de datos MySQL conectada                       | ✅ Completo  |
 | Migraciones y seeders                               | ✅ Completo  |
-| Reseñas                                             | 🔜 Pendiente |
+| Reseñas                                             | ✅ Completo  |
 | Fotos                                               | 🔜 Pendiente |
-| Integración IA                                      | 🔜 Pendiente |
+| Integración IA                                      | ✅ Completo  |

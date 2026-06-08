@@ -30,9 +30,10 @@ TurismoVE/
 - CORS
 - Caché básico en memoria
 
-### Base de datos propuesta
+### Base de datos
 
-- PostgreSQL
+- MySQL
+- Sequelize + Sequelize CLI
 
 ## Funcionalidades iniciales
 

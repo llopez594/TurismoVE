@@ -313,18 +313,86 @@ PATCH /api/admin/places/123/reject
 
 ---
 
-# 7. Rutas planificadas para siguientes módulos
+# 7. Reseñas
 
-Estas rutas todavía no son obligatorias para la Tarea 4, pero forman parte del crecimiento natural del proyecto.
+## GET `/places/:id/reviews`
 
-## Reseñas
+Lista las reseñas publicadas para un lugar.
+
+**Ruta pública.**
+
+**Ejemplo:**
 
 ```txt
-GET    /api/places/:id/reviews
-POST   /api/places/:id/reviews
-PUT    /api/reviews/:id
-DELETE /api/reviews/:id
+GET /api/places/1/reviews
 ```
+
+---
+
+## POST `/places/:id/reviews`
+
+Permite a un usuario autenticado publicar una reseña para un lugar aprobado.
+
+**Ruta protegida. Usuario registrado o administrador.**
+
+**Headers:**
+
+```txt
+Authorization: Bearer jwt_token
+```
+
+**Body:**
+
+```json
+{
+  "rating": 5,
+  "comment": "Excelente experiencia turística."
+}
+```
+
+---
+
+## DELETE `/places/:id/reviews/:reviewId`
+
+Permite eliminar una reseña propia.
+
+**Ruta protegida. Usuario registrado o administrador.**
+
+**Ejemplo:**
+
+```txt
+DELETE /api/places/1/reviews/10
+```
+
+---
+
+# 8. IA
+
+## POST `/ai/chat`
+
+Permite enviar una pregunta al asistente turístico de TurismoVE.
+
+**Ruta pública.**
+
+**Body:**
+
+```json
+{
+  "message": "Recomiéndame destinos de playa en Venezuela"
+}
+```
+
+**Respuesta esperada:**
+
+```json
+{
+  "reply": "Respuesta generada por el asistente turístico."
+}
+```
+
+---
+
+# 9. Rutas planificadas para siguientes módulos
 
 ## Fotos
 
@@ -334,16 +402,9 @@ POST   /api/places/:id/photos
 DELETE /api/photos/:id
 ```
 
-## IA
-
-```txt
-POST /api/ai/recommendations
-POST /api/ai/tourism-assistant
-```
-
 ---
 
-# 8. Usuario administrador de prueba
+# 10. Usuario administrador de prueba
 
 ```txt
 Correo: admin@turismove.com
@@ -352,7 +413,7 @@ Contraseña: Admin1234
 
 ---
 
-# 9. Resumen de cumplimiento
+# 11. Resumen de cumplimiento
 
 | Requisito              | Estado                        |
 | ---------------------- | ----------------------------- |
@@ -362,5 +423,7 @@ Contraseña: Admin1234
 | Autorización por roles | Implementado                  |
 | Caché básico           | Implementado                  |
 | Paginación y filtros   | Implementado                  |
+| Reseñas                | Implementado                  |
+| IA                     | Implementado                  |
 | Deploy                 | Preparado                     |
-| Base de datos real     | Pendiente para siguiente fase |
+| Base de datos real     | Implementado con MySQL + Sequelize |
