@@ -14,7 +14,17 @@ module.exports = {
                 role: "admin",
                 created_at: new Date(),
                 updated_at: new Date()
+            },
+            
+            {
+                name: "Administrador TurismoVE",
+                email: "testuser@gmail.com",
+                password_hash: bcrypt.hashSync("password123", 10),
+                role: "admin",
+                created_at: new Date(),
+                updated_at: new Date()
             }
+
         ]);
 
         // Insertar categorías iniciales
