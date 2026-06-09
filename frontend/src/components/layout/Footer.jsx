@@ -12,7 +12,7 @@ export default function Footer() {
                         <span>TurismoVE <strong>Explorer</strong></span>
                     </Link>
                     <p className="footer__tagline">
-                        Tu portal de confianza para explorar, calificar y reservar los mejores alojamientos en Venezuela.
+                        Tu portal de confianza para explorar y calificar los mejores lugares en Venezuela.
                         Descubre paraísos naturales con la tranquilidad de servicios básicos garantizados.
                     </p>
                 </div>
@@ -43,9 +43,7 @@ export default function Footer() {
                     </a>
                     <span className="footer__link">Soporte: 24/7 en Línea</span>
                     <div className="footer__social">
-                        <a href="#" className="footer__social-icon" aria-label="Instagram"><Instagram size={18} /></a>
-                        <a href="#" className="footer__social-icon" aria-label="Twitter"><Twitter size={18} /></a>
-                        <a href="#" className="footer__social-icon" aria-label="Facebook"><Facebook size={18} /></a>
+                        <a href="https://www.instagram.com/turismove2026?igsh=a2hwd3BncmEzbGlx" className="footer__social-icon" aria-label="Instagram"><Instagram size={18} /></a>
                     </div>
                 </div>
             </div>
@@ -53,7 +51,6 @@ export default function Footer() {
             <div className="footer__bottom">
                 <div className="container">
                     <span>© 2026 TurismoVE Explorer. Todos los derechos reservados.</span>
-                    <span className="footer__badge">PREMIUM LIGHT</span>
                 </div>
             </div>
 

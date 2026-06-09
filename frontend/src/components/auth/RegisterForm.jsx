@@ -122,11 +122,29 @@ export default function RegisterForm({ onSwitch, onClose }) {
             </p>
 
             <style>{`
+                .auth-form { text-align: center; }
+                .auth-form__logo { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 1rem; font-weight: 700; color: var(--color-text); margin-bottom: 20px; }
+                .auth-form__logo strong { color: var(--color-primary); }
+                .auth-form__title { font-size: var(--font-size-2xl); font-weight: 800; color: var(--color-text); margin-bottom: 6px; }
+                .auth-form__subtitle { font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: 28px; }
+                .auth-form__fields { display: flex; flex-direction: column; gap: 16px; text-align: left; }
+                .auth-form__group { display: flex; flex-direction: column; gap: 6px; }
+                .auth-form__label { font-size: var(--font-size-sm); font-weight: 600; color: var(--color-text); }
+                .auth-form__input-wrap { position: relative; display: flex; align-items: center; }
+                .auth-form__input-icon { position: absolute; left: 14px; color: var(--color-text-muted); pointer-events: none; }
+                .auth-form__input { width: 100%; padding: 12px 14px 12px 40px; background: var(--color-bg-input); border: 1.5px solid transparent; border-radius: var(--radius); font-size: var(--font-size-base); color: var(--color-text); outline: none; transition: border-color var(--transition); }
+                .auth-form__input:focus { border-color: var(--color-primary); background: var(--color-white); }
+                .auth-form__eye { position: absolute; right: 14px; background: none; border: none; color: var(--color-text-muted); cursor: pointer; padding: 0; }
+                .auth-form__error { background: #FEE2E2; color: #991B1B; padding: 10px 14px; border-radius: var(--radius-sm); font-size: var(--font-size-sm); text-align: center; }
+                .auth-form__switch { margin-top: 20px; font-size: var(--font-size-sm); color: var(--color-text-muted); }
+                .auth-form__switch-btn { background: none; border: none; color: var(--color-primary); font-weight: 700; cursor: pointer; font-size: var(--font-size-sm); }
+                .auth-form__switch-btn:hover { text-decoration: underline; }
                 .avatar-selector { display: flex; gap: 10px; flex-wrap: wrap; }
                 .avatar-selector__item { background: none; border: 2.5px solid transparent; border-radius: 50%; padding: 2px; cursor: pointer; transition: border-color var(--transition); }
                 .avatar-selector__item img { border-radius: 50%; display: block; }
                 .avatar-selector__item--active { border-color: var(--color-primary); }
                 .avatar-selector__item:hover { border-color: var(--color-primary-light); }
+                .auth-form__input::-ms-reveal, .auth-form__input::-ms-clear {display: none;}
             `}</style>
         </div>
     );

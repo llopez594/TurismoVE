@@ -68,11 +68,7 @@ export default function LoginForm({ onSwitch, onClose }) {
                             onChange={e => setPassword(e.target.value)}
                             autoComplete="current-password"
                         />
-                        <button
-                            type="button"
-                            className="auth-form__eye"
-                            onClick={() => setShowPassword(!showPassword)}
-                        >
+                        <button type="button" className="auth-form__eye" onClick={() => setShowPassword(!showPassword)}>
                             {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                         </button>
                     </div>
@@ -110,6 +106,7 @@ export default function LoginForm({ onSwitch, onClose }) {
                 .auth-form__switch { margin-top: 20px; font-size: var(--font-size-sm); color: var(--color-text-muted); }
                 .auth-form__switch-btn { background: none; border: none; color: var(--color-primary); font-weight: 700; cursor: pointer; font-size: var(--font-size-sm); }
                 .auth-form__switch-btn:hover { text-decoration: underline; }
+                .auth-form__input::-ms-reveal, .auth-form__input::-ms-clear {display: none;}
             `}</style>
         </div>
     );
