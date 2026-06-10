@@ -1327,6 +1327,26 @@ const places = [
         ]
     },
     {
+        "title": "Quebrada de Jaspe",
+        "description": "Quebrada de roca rojiza y agua clara, parada frecuente en recorridos por la Gran Sabana.",
+        "location": "Gran Sabana, Bolívar",
+        "type": "actividad",
+        "cover_image": "https://upload.wikimedia.org/wikipedia/commons/7/76/BellaJaspe.JPG",
+        "status": "approved",
+        "rating_average": 4.9,
+        "category_id": 4,
+        "cost": null,
+        "address": "Gran Sabana, Bolívar",
+        "check_in": "07:00",
+        "check_out": "17:00",
+        "services": [
+            "Actividad al aire libre",
+            "Guía local",
+            "Excursión",
+            "Fotografía"
+        ]
+    },
+    {
         "title": "Salto Ángel",
         "description": "Cascada icónica de Venezuela, visitada mediante rutas fluviales, sobrevuelos y caminatas organizadas.",
         "location": "Parque Nacional Canaima, Bolívar",
@@ -1397,26 +1417,6 @@ const places = [
         "category_id": 4,
         "cost": null,
         "address": "Estado Bolívar",
-        "check_in": "07:00",
-        "check_out": "17:00",
-        "services": [
-            "Actividad al aire libre",
-            "Guía local",
-            "Excursión",
-            "Fotografía"
-        ]
-    },
-    {
-        "title": "Quebrada de Jaspe",
-        "description": "Quebrada de roca rojiza y agua clara, parada frecuente en recorridos por la Gran Sabana.",
-        "location": "Gran Sabana, Bolívar",
-        "type": "actividad",
-        "cover_image": "https://upload.wikimedia.org/wikipedia/commons/7/76/BellaJaspe.JPG",
-        "status": "approved",
-        "rating_average": 4.9,
-        "category_id": 4,
-        "cost": null,
-        "address": "Gran Sabana, Bolívar",
         "check_in": "07:00",
         "check_out": "17:00",
         "services": [

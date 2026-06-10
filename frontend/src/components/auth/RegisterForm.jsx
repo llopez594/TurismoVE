@@ -43,7 +43,7 @@ export default function RegisterForm({ onSwitch, onClose }) {
                 <span>TurismoVE <strong>Explorer</strong></span>
             </div>
             <h2 className="auth-form__title">Crear Cuenta</h2>
-            <p className="auth-form__subtitle">Regístrate para calificar y reservar alojamientos</p>
+            <p className="auth-form__subtitle">Regístrate para calificar</p>
 
             <form onSubmit={handleSubmit} className="auth-form__fields">
                 <div className="auth-form__group">

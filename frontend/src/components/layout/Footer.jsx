@@ -13,7 +13,7 @@ export default function Footer() {
                     </Link>
                     <p className="footer__tagline">
                         Tu portal de confianza para explorar y calificar los mejores lugares en Venezuela.
-                        Descubre paraísos naturales con la tranquilidad de servicios básicos garantizados.
+                        Descubre paraísos naturales.
                     </p>
                 </div>
 
@@ -34,17 +34,6 @@ export default function Footer() {
                     <span className="footer__link">Preguntas Frecuentes</span>
                     <span className="footer__link">Términos de Servicio</span>
                     <span className="footer__link">Privacidad</span>
-                </div>
-
-                <div className="footer__col">
-                    <h4 className="footer__heading">CONTACTO</h4>
-                    <a href="mailto:info@turismove.com" className="footer__link footer__link--primary">
-                        info@turismove.com
-                    </a>
-                    <span className="footer__link">Soporte: 24/7 en Línea</span>
-                    <div className="footer__social">
-                        <a href="https://www.instagram.com/turismove2026?igsh=a2hwd3BncmEzbGlx" className="footer__social-icon" aria-label="Instagram"><Instagram size={18} /></a>
-                    </div>
                 </div>
             </div>
 
