@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import AuthModal from "../auth/AuthModal";
+import ChatWidget from "../chatbot/ChatWidget";
 
 export default function Layout() {
     const [authOpen, setAuthOpen] = useState(false);
@@ -30,6 +31,7 @@ export default function Layout() {
                 onClose={() => setAuthOpen(false)}
                 initialView={authView}
             />
+            <ChatWidget />
         </div>
     );
 }
