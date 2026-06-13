@@ -8,8 +8,19 @@ import PublishPlace from "./pages/PublishPlace";
 import MyPublications from "./pages/MyPublications";
 import Profile from "./pages/Profile";
 
-function ComingSoon({ name }) {
-
+function NotFound() {
+    return (
+        <div style={{
+            display: "flex", flexDirection: "column", alignItems: "center",
+            justifyContent: "center", minHeight: "60vh", gap: "16px",
+            color: "var(--color-text-muted)"
+        }}>
+            <span style={{ fontSize: "3rem" }}>🔍</span>
+            <h2 style={{ color: "var(--color-text)" }}>Página no encontrada</h2>
+            <p>La página que buscas no existe.</p>
+            <a href="/" style={{ color: "var(--color-primary)", fontWeight: 700 }}>Volver al inicio</a>
+        </div>
+    );
 }
 
 export default function App() {
@@ -25,7 +36,7 @@ export default function App() {
                         <Route path="mis-publicaciones" element={<MyPublications />} />
                         <Route path="perfil" element={<Profile />} />
                         <Route path="admin" element={<ComingSoon name="Admin" />} />
-                        <Route path="*" element={<ComingSoon name="Página no encontrada" />} />
+                        <Route path="*" element={<NotFound />} />
                     </Route>
                 </Routes>
             </BrowserRouter>
