@@ -140,13 +140,7 @@ export default function PlaceFilters({ onSearchChange, onLocationChange, onCateg
                     font-size: var(--font-size-sm);
                     font-weight: 600;
                     color: var(--color-text);
-                    cursor: pointer;
-                    transition: all var(--transition);
-                }
-
-                .place-filters__btn:hover { 
-                    border-color: var(--color-primary);
-                    color: var(--color-primary);
+                    cursor: default;
                 }
             `}</style>
         </div>

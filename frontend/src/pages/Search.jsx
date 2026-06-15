@@ -40,8 +40,8 @@ export default function Search() {
             <div className="container">
                 <div className="search-page__header">
                     <div>
-                        <h1 className="search-page__title">Todos los Alojamientos</h1>
-                        <p className="search-page__subtitle">Explora los mejores alojamientos verificados en todo el país.</p>
+                        <h1 className="search-page__title">Todos los los lugares</h1>
+                        <p className="search-page__subtitle">Explora los mejores lugares verificados en todo el país.</p>
                     </div>
                 </div>
 
@@ -58,11 +58,11 @@ export default function Search() {
                 ) : places.length === 0 ? (
                     <div className="search-page__empty">
                         <span style={{ fontSize: "2.5rem" }}>🔍</span>
-                        <p>No se encontraron alojamientos con esos filtros.</p>
+                        <p>No se encontraron lugares con esos filtros.</p>
                     </div>
                 ) : (
                     <>
-                        <p className="search-page__count">{total} alojamiento{total !== 1 ? "s" : ""} encontrado{total !== 1 ? "s" : ""}</p>
+                        <p className="search-page__count">{total} Lugar{total !== 1 ? "es" : ""} encontrado{total !== 1 ? "s" : ""}</p>
                         <div className="search-page__list">
                             {places.map(place => (
                                 <PlaceListItem key={place.id} place={place} />

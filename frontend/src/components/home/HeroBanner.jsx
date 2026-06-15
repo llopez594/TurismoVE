@@ -19,22 +19,18 @@ export default function HeroBanner() {
         <section className="hero">
             <div className="hero__overlay" />
             <div className="hero__content">
-                <h1 className="hero__title">Discover your next adventure!</h1>
-                <p className="hero__subtitle">Find the best places to explore in Venezuela.</p>
+                <h1 className="hero__title">Descubre tu nueva aventura!</h1>
+                <p className="hero__subtitle">Encuentra los mejores lugares para explorar en Venezuela.</p>
 
                 <form className="hero__search" onSubmit={handleSearch}>
                     <div className="hero__search-inner">
-                        <Search size={18} className="hero__search-icon" />
                         <input
                             type="text"
                             className="hero__search-input"
-                            placeholder="Search destinations..."
+                            placeholder="Buscar destinos..."
                             value={query}
                             onChange={e => setQuery(e.target.value)}
                         />
-                        <div className="hero__search-divider" />
-                        <MapPin size={16} className="hero__search-icon2" />
-                        <span className="hero__search-hint">¿A dónde vas? (ej. Mérida, Falcón)</span>
                         <button type="submit" className="hero__search-btn">
                             <Search size={18} />
                         </button>
@@ -96,8 +92,10 @@ export default function HeroBanner() {
                     gap: 10px;
                     box-shadow: var(--shadow-lg);
                 }
-                .hero__search-icon { color: var(--color-text-muted); flex-shrink: 0; }
-                .hero__search-icon2 { color: var(--color-primary); flex-shrink: 0; }
+                .hero__search-icon {
+                color: var(--color-text-muted);
+                flex-shrink: 0; 
+                }
                 .hero__search-input {
                     flex: 1;
                     border: none;
@@ -106,20 +104,6 @@ export default function HeroBanner() {
                     color: var(--color-text);
                     background: transparent;
                     min-width: 0;
-                }
-                .hero__search-divider {
-                    width: 1px;
-                    height: 24px;
-                    background: var(--color-border);
-                    flex-shrink: 0;
-                }
-                .hero__search-hint {
-                    font-size: var(--font-size-sm);
-                    color: var(--color-text-muted);
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    max-width: 200px;
                 }
                 .hero__search-btn {
                     background: var(--color-primary);

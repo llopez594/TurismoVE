@@ -24,11 +24,10 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
 
                 <nav className="navbar__links hide-mobile">
                     <Link to="/buscar" className="navbar__link">Explorar</Link>
-                    <Link to="/buscar" className="navbar__link">Buscar Alojamientos</Link>
                     {isAuthenticated && (
                         <>
-                            <Link to="/perfil" className="navbar__link">Mi Perfil</Link>
-                            <Link to="/mis-publicaciones" className="navbar__link">Mis Publicaciones</Link>
+                            <Link to="/perfil" className="navbar__link">Mi perfil</Link>
+                            <Link to="/mis-publicaciones" className="navbar__link">Mis publicaciones</Link>
                             <Link to="/publicar" className="navbar__link">Publicar</Link>
                         </>
                     )}
@@ -53,7 +52,7 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
                         </div>
                     ) : (
                         <>
-                            <button onClick={onLoginClick} className="navbar__link">Iniciar Sesión</button>
+                            <button onClick={onLoginClick} className="navbar__link">Iniciar sesión</button>
                             <button onClick={onRegisterClick} className="btn btn-primary" style={{ padding: "8px 18px" }}>
                                 Registrarse
                             </button>
@@ -107,7 +106,7 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
                     {!isAuthenticated ? (
                         <>
                             <button className="navbar__mobile-link" onClick={() => { onLoginClick(); setMenuOpen(false); }}>
-                                Iniciar Sesión
+                                Iniciar sesión
                             </button>
                             <button className="navbar__mobile-link" onClick={() => { onRegisterClick(); setMenuOpen(false); }}>
                                 Registrarse
@@ -115,7 +114,7 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
                         </>
                     ) : (
                         <button className="navbar__mobile-link navbar__mobile-link--danger" onClick={handleLogout}>
-                            <LogOut size={18} /> Cerrar Sesión
+                            <LogOut size={18} /> Cerrar sesión
                         </button>
                     )}
                 </div>
