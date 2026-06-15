@@ -7,6 +7,7 @@ import PlaceDetail from "./pages/PlaceDetail";
 import PublishPlace from "./pages/PublishPlace";
 import MyPublications from "./pages/MyPublications";
 import Profile from "./pages/Profile";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function NotFound() {
     return (
@@ -35,7 +36,7 @@ export default function App() {
                         <Route path="publicar" element={<PublishPlace />} />
                         <Route path="mis-publicaciones" element={<MyPublications />} />
                         <Route path="perfil" element={<Profile />} />
-                        <Route path="admin" element={<ComingSoon name="Admin" />} />
+                        <Route path="admin" element={<AdminDashboard />} />
                         <Route path="*" element={<NotFound />} />
                     </Route>
                 </Routes>
