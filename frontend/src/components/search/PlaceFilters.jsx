@@ -42,20 +42,9 @@ export default function PlaceFilters({ onSearchChange, onLocationChange, onCateg
                 <input
                     type="text"
                     className="place-filters__input"
-                    placeholder="Buscar por nombre..."
+                    placeholder="Buscar por nombre o ubicación..."
                     value={searchVal}
                     onChange={handleSearch}
-                />
-            </div>
-
-            <div className="place-filters__input-wrap">
-                <MapPin size={16} className="place-filters__icon" />
-                <input
-                    type="text"
-                    className="place-filters__input"
-                    placeholder="Buscar por ubicación..."
-                    value={locationVal}
-                    onChange={handleLocation}
                 />
             </div>
 

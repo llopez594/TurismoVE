@@ -11,13 +11,13 @@ export default function PlaceTabs() {
                     className={`place-tabs__tab ${activeTab === "lugar" ? "place-tabs__tab--active" : ""}`}
                     onClick={() => setActiveTab("lugar")}
                 >
-                    Publicar Lugar Turístico (US-09)
+                    Publicar Lugar Turístico
                 </button>
                 <button
                     className={`place-tabs__tab ${activeTab === "actividad" ? "place-tabs__tab--active" : ""}`}
                     onClick={() => setActiveTab("actividad")}
                 >
-                    Publicar Experiencia (US-10)
+                    Publicar Experiencia 
                 </button>
             </div>
             <div className="place-tabs__body">
