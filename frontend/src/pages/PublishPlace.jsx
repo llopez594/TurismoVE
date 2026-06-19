@@ -4,12 +4,17 @@ import { useAuth } from "../context/AuthContext";
 import PlaceTabs from "../components/publish/PlaceTabs";
 
 export default function PublishPlace() {
-    const { user, isAuthenticated } = useAuth();
+    const { user, isAuthenticated, loading: authLoading } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
+        if (authLoading) return;
         if (!isAuthenticated) navigate("/");
-    }, [isAuthenticated]);
+    }, [isAuthenticated, authLoading, navigate]);
+
+    if (authLoading) {
+        return <div style={{ display: "flex", justifyContent: "center", padding: "80px" }}><div className="spinner" /></div>;
+    }
 
     return (
         <div className="publish-page">

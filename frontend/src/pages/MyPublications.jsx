@@ -6,23 +6,34 @@ import PublicationCard from "../components/publications/PublicationCard";
 import EditPlaceModal from "../components/publications/EditPlaceModal";
 
 export default function MyPublications() {
-    const { user, isAuthenticated } = useAuth();
+    const { user, isAuthenticated, loading: authLoading } = useAuth();
     const navigate = useNavigate();
     const [publications, setPublications] = useState([]);
     const [loading, setLoading] = useState(true);
     const [editTarget, setEditTarget] = useState(null);
 
+    async function loadPublications() {
+        setLoading(true);
+        try {
+            const res = await api.get("/places/user/me");
+            const data = unwrapResponse(res.data);
+            setPublications(data.data || data || []);
+        } catch {
+            setPublications([]);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     useEffect(() => {
+        if (authLoading) return;
         if (!isAuthenticated) { navigate("/"); return; }
-        api.get("/places?limit=50")
-            .then(res => {
-                const data = unwrapResponse(res.data);
-                const all = data.data || [];
-                setPublications(all.filter(p => p.userId === user?.id || p.createdBy === user?.id));
-            })
-            .catch(() => {})
-            .finally(() => setLoading(false));
-    }, [isAuthenticated, user]);
+        loadPublications();
+    }, [isAuthenticated, user, authLoading, navigate]);
+
+    if (authLoading) {
+        return <div style={{ display: "flex", justifyContent: "center", padding: "80px" }}><div className="spinner" /></div>;
+    }
 
     return (
         <div className="my-pubs-page">
@@ -74,19 +85,13 @@ export default function MyPublications() {
                     isOpen={!!editTarget}
                     onClose={() => setEditTarget(null)}
                     publication={editTarget}
+                    onSaveSuccess={loadPublications}
                 />
             )}
 
             <style>{`
                 .my-pubs-page { padding: 40px 0 64px; }
                 .my-pubs-page__inner { display: grid; grid-template-columns: 260px 1fr; gap: 40px; align-items: start; }
-                .user-sidebar { background: var(--color-white); border-radius: var(--radius-xl); box-shadow: var(--shadow); padding: 28px 24px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; }
-                .user-sidebar__name { font-size: var(--font-size-lg); font-weight: 700; color: var(--color-text); }
-                .user-sidebar__email { font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: 8px; }
-                .user-sidebar__nav { width: 100%; display: flex; flex-direction: column; gap: 4px; }
-                .user-sidebar__link { display: block; padding: 10px 14px; border-radius: var(--radius); font-size: var(--font-size-sm); font-weight: 500; color: var(--color-text-muted); transition: all var(--transition); text-align: left; }
-                .user-sidebar__link:hover { background: var(--color-bg-input); color: var(--color-primary); }
-                .user-sidebar__link--active { background: #E8F5F5; color: var(--color-primary); font-weight: 700; }
                 .my-pubs-page__main { min-width: 0; }
                 .my-pubs-page__header { margin-bottom: 24px; }
                 .my-pubs-page__header h1 { font-size: var(--font-size-2xl); font-weight: 800; color: var(--color-text); margin-bottom: 8px; }

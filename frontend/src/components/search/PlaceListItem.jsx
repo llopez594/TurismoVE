@@ -15,7 +15,20 @@ export default function PlaceListItem({ place }) {
     const rating = parseFloat(place.ratingAverage || place.rating_average || 0);
     const cost = place.cost ? `$${Number(place.cost).toFixed(0)}` : null;
     const isExperience = place.type === "actividad";
-    const services = place.services || [];
+    
+    let services = [];
+    if (place.services) {
+        if (Array.isArray(place.services)) {
+            services = place.services;
+        } else if (typeof place.services === "string") {
+            try {
+                services = JSON.parse(place.services);
+            } catch (e) {
+                services = [];
+            }
+        }
+    }
+
     const category = place.category?.name || "";
 
     return (

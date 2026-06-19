@@ -5,16 +5,21 @@ import api, { unwrapResponse } from "../services/api";
 import PendingPlaceCard from "../components/admin/PendingPlaceCard";
 
 export default function AdminDashboard() {
-    const { isAuthenticated, isAdmin } = useAuth();
+    const { isAuthenticated, isAdmin, loading: authLoading } = useAuth();
     const navigate = useNavigate();
     const [pending, setPending] = useState([]);
     const [loading, setLoading] = useState(true);
     const [toast, setToast] = useState("");
 
     useEffect(() => {
+        if (authLoading) return;
         if (!isAuthenticated || !isAdmin) { navigate("/"); return; }
         loadPending();
-    }, [isAuthenticated, isAdmin]);
+    }, [isAuthenticated, isAdmin, authLoading, navigate]);
+
+    if (authLoading) {
+        return <div style={{ display: "flex", justifyContent: "center", padding: "80px" }}><div className="spinner" /></div>;
+    }
 
     async function loadPending() {
         setLoading(true);

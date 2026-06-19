@@ -93,8 +93,21 @@ export async function getPlaceById(req, res) {
             });
         }
 
+        const item = place.get({ plain: true });
+
         return res.status(200).json({
-            data: place
+            data: {
+                ...item,
+                services: Array.isArray(item.services)
+                    ? item.services
+                    : item.services
+                        ? typeof item.services === "string"
+                            ? (() => {
+                                try { return JSON.parse(item.services); } catch (e) { return []; }
+                              })()
+                            : item.services
+                        : []
+            }
         });
     } catch (error) {
         return res.status(500).json({
@@ -244,3 +257,45 @@ export async function deletePlace(req, res) {
         });
     }
 }
+
+export async function getUserPlaces(req, res) {
+    try {
+        const places = await Place.findAll({
+            where: { userId: req.user.id },
+            include: [
+                {
+                    model: Category,
+                    as: "category",
+                    attributes: ["id", "name"]
+                }
+            ],
+            order: [["createdAt", "DESC"]]
+        });
+
+        const parsedPlaces = places.map((place) => {
+            const item = place.get({ plain: true });
+            return {
+                ...item,
+                services: Array.isArray(item.services)
+                    ? item.services
+                    : item.services
+                        ? typeof item.services === "string"
+                            ? (() => {
+                                try { return JSON.parse(item.services); } catch (e) { return []; }
+                              })()
+                            : item.services
+                        : []
+            };
+        });
+
+        return res.status(200).json({
+            data: parsedPlaces
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error al obtener las publicaciones del usuario.",
+            error: error.message
+        });
+    }
+}
+
