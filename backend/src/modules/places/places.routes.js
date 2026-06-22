@@ -6,12 +6,14 @@ import {
     deletePlace,
     getPlaceById,
     getPlaces,
-    updatePlace
+    updatePlace,
+    getUserPlaces
 } from "./places.controller.js";
 
 const router = Router();
 
 router.get("/", cache(120), getPlaces);
+router.get("/user/me", authenticate, getUserPlaces);
 router.get("/:id", getPlaceById);
 router.post("/", authenticate, createPlace);
 router.put("/:id", authenticate, updatePlace);

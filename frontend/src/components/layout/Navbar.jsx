@@ -39,13 +39,15 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
                 <div className="navbar__auth hide-mobile">
                     {isAuthenticated ? (
                         <div className="navbar__user">
-                            <img
-                                src={`/assets/${user.avatar || "avatar1.png"}`}
-                                alt={user.name}
-                                width={34} height={34}
-                                style={{ borderRadius: "50%", objectFit: "cover" }}
-                            />
-                            <span className="navbar__user-name">{user.name}</span>
+                            <Link to="/perfil" className="navbar__user-profile-link">
+                                <img
+                                    src={`/assets/${user.avatar || "avatar1.png"}`}
+                                    alt={user.name}
+                                    width={34} height={34}
+                                    style={{ borderRadius: "50%", objectFit: "cover" }}
+                                />
+                                <span className="navbar__user-name">{user.name}</span>
+                            </Link>
                             <button onClick={handleLogout} className="btn btn-outline" style={{ padding: "7px 16px" }}>
                                 <LogOut size={15} /> Salir
                             </button>
@@ -63,12 +65,14 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
                 <div className="navbar__mobile-controls hide-desktop">
                     <Bell size={22} style={{ color: "var(--color-white)" }} />
                     {isAuthenticated ? (
-                        <img
-                            src={`/assets/${user.avatar || "avatar1.png"}`}
-                            alt={user.name}
-                            width={32} height={32}
-                            style={{ borderRadius: "50%", objectFit: "cover" }}
-                        />
+                        <Link to="/perfil" style={{ display: "block" }}>
+                            <img
+                                src={`/assets/${user.avatar || "avatar1.png"}`}
+                                alt={user.name}
+                                width={32} height={32}
+                                style={{ borderRadius: "50%", objectFit: "cover" }}
+                            />
+                        </Link>
                     ) : (
                         <button onClick={onLoginClick} style={{ color: "var(--color-white)", background: "none", border: "none" }}>
                             <User size={22} />
@@ -130,7 +134,9 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
                 .navbar__link:hover { color: var(--color-primary); background: #F0FAFA; }
                 .navbar__link--admin { color: var(--color-primary); font-weight: 700; }
                 .navbar__auth { display: flex; align-items: center; gap: 12px; }
-                .navbar__user { display: flex; align-items: center; gap: 10px; }
+                .navbar__user { display: flex; align-items: center; gap: 16px; }
+                .navbar__user-profile-link { display: flex; align-items: center; gap: 10px; transition: all var(--transition); }
+                .navbar__user-profile-link:hover { color: var(--color-primary); opacity: 0.85; }
                 .navbar__user-name { font-size: var(--font-size-sm); font-weight: 600; color: var(--color-text); }
                 .navbar__mobile-controls { display: flex; align-items: center; gap: 16px; }
                 @media (max-width: 768px) {

@@ -17,7 +17,7 @@ export default function PlaceTabs() {
                     className={`place-tabs__tab ${activeTab === "actividad" ? "place-tabs__tab--active" : ""}`}
                     onClick={() => setActiveTab("actividad")}
                 >
-                    Publicar Experiencia 
+                    Publicar Experiencia
                 </button>
             </div>
             <div className="place-tabs__body">

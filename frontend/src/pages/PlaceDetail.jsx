@@ -29,7 +29,20 @@ export default function PlaceDetail() {
     if (error || !place) return <div style={{ textAlign: "center", padding: "80px", color: "var(--color-text-muted)" }}>{error || "Lugar no encontrado."}</div>;
 
     const rating = parseFloat(place.ratingAverage || 0);
-    const services = place.services || [];
+    
+    let services = [];
+    if (place.services) {
+        if (Array.isArray(place.services)) {
+            services = place.services;
+        } else if (typeof place.services === "string") {
+            try {
+                services = JSON.parse(place.services);
+            } catch (e) {
+                services = [];
+            }
+        }
+    }
+
     const isExperience = place.type === "actividad";
 
     return (
