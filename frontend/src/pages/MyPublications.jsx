@@ -45,9 +45,9 @@ export default function MyPublications() {
                     <h3 className="user-sidebar__name">{user?.name}</h3>
                     <p className="user-sidebar__email">{user?.email}</p>
                     <nav className="user-sidebar__nav">
-                        <Link to="/perfil" className="user-sidebar__link">Configuración de Perfil →</Link>
-                        <Link to="/mis-publicaciones" className="user-sidebar__link user-sidebar__link--active">Mis Publicaciones →</Link>
-                        <Link to="/publicar" className="user-sidebar__link">Publicar Sitio / Experiencia →</Link>
+                        <Link to="/perfil" className="user-sidebar__link">Configuración de Perfil</Link>
+                        <Link to="/mis-publicaciones" className="user-sidebar__link user-sidebar__link--active">Mis Publicaciones</Link>
+                        <Link to="/publicar" className="user-sidebar__link">Publicar Sitio / Experiencia</Link>
                     </nav>
                 </aside>
 
@@ -66,7 +66,6 @@ export default function MyPublications() {
                         </div>
                     ) : publications.length === 0 ? (
                         <div className="my-pubs-page__empty">
-                            <span style={{ fontSize: "2.5rem" }}>📭</span>
                             <p>Aún no has publicado ningún lugar.</p>
                             <Link to="/publicar" className="btn btn-primary">Publicar mi primer lugar</Link>
                         </div>

@@ -78,7 +78,6 @@ export default function PublishPlaceForm({ type = "lugar" }) {
 
     if (success) return (
         <div className="publish-success">
-            <span style={{ fontSize: "3rem" }}>✅</span>
             <h3>¡Lugar enviado correctamente!</h3>
             <p>Queda pendiente de aprobación por el administrador.</p>
             <div style={{ display: "flex", gap: "12px", marginTop: "8px" }}>

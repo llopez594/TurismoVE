@@ -27,14 +27,7 @@ export default function Footer() {
                     <Link to="/buscar?categoria=Cultura" className="footer__link">Cultura</Link>
                     <Link to="/buscar?categoria=Gastronomía" className="footer__link">Gastronomía</Link>
                 </div>
-
-                <div className="footer__col">
-                    <h4 className="footer__heading">INFORMACIÓN</h4>
-                    <span className="footer__link">Soporte al Usuario</span>
-                    <span className="footer__link">Preguntas Frecuentes</span>
-                    <span className="footer__link">Términos de Servicio</span>
-                    <span className="footer__link">Privacidad</span>
-                </div>
+                
             </div>
 
             <div className="footer__bottom">

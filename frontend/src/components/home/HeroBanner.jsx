@@ -27,7 +27,7 @@ export default function HeroBanner() {
                         <input
                             type="text"
                             className="hero__search-input"
-                            placeholder="Buscar destinos..."
+                            placeholder="Buscar por nombre o ubicación..."
                             value={query}
                             onChange={e => setQuery(e.target.value)}
                         />

@@ -70,9 +70,9 @@ export default function Search() {
                         </div>
                         {total > 10 && (
                             <div className="search-page__pagination">
-                                <button className="btn btn-outline" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>← Anterior</button>
+                                <button className="btn btn-outline" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}> Anterior</button>
                                 <span>Página {page}</span>
-                                <button className="btn btn-outline" onClick={() => setPage(p => p + 1)} disabled={page * 10 >= total}>Siguiente →</button>
+                                <button className="btn btn-outline" onClick={() => setPage(p => p + 1)} disabled={page * 10 >= total}>Siguiente </button>
                             </div>
                         )}
                     </>

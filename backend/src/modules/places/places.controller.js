@@ -93,6 +93,9 @@ export async function getPlaceById(req, res) {
             });
         }
 
+        // return res.status(200).json({
+        //     data: place
+        // }); Se cambio estas lineas por las de abajo, ya que es un String que contiene un JSON no es un array 
         const item = place.get({ plain: true });
 
         return res.status(200).json({
