@@ -31,7 +31,7 @@ export default function Search() {
                 setPlaces(data.data || []);
                 setTotal(data.total || 0);
             })
-            .catch(() => setError("Error al cargar los alojamientos."))
+            .catch(() => setError("Error al cargar los lugares."))
             .finally(() => setLoading(false));
     }, [searchText, categoryId, page]);
 

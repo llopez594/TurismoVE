@@ -26,7 +26,7 @@ export default function PlaceCard({ place }) {
                 )}
                 {category && (
                     <span className={`place-card__badge ${isExperience ? "badge-exp" : "badge-place"}`}>
-                        {isExperience ? "EXPERIENCIA" : "ALOJAMIENTO"}
+                        {isExperience ? "EXPERIENCIA" : "LUGAR"}
                     </span>
                 )}
             </div>

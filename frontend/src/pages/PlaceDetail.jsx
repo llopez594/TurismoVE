@@ -29,7 +29,7 @@ export default function PlaceDetail() {
     if (error || !place) return <div style={{ textAlign: "center", padding: "80px", color: "var(--color-text-muted)" }}>{error || "Lugar no encontrado."}</div>;
 
     const rating = parseFloat(place.ratingAverage || 0);
-    
+
     let services = [];
     if (place.services) {
         if (Array.isArray(place.services)) {
@@ -59,7 +59,7 @@ export default function PlaceDetail() {
                         <div className="detail-page__image-placeholder" />
                     )}
                     <span className={`badge ${isExperience ? "badge-exp" : "badge-place"} detail-page__type`}>
-                        {isExperience ? "EXPERIENCIA" : "ALOJAMIENTO"}
+                        {isExperience ? "EXPERIENCIA" : "LUGAR"}
                     </span>
                 </div>
 

@@ -9,7 +9,7 @@ export default function PublicationCard({ publication, onEdit }) {
 
     const statusMap = {
         approved: { label: "APROBADO", className: "badge-approved" },
-        pending:  { label: "PENDIENTE", className: "badge-pending" },
+        pending: { label: "PENDIENTE", className: "badge-pending" },
         rejected: { label: "RECHAZADO", className: "badge-rejected" },
     };
     const { label, className } = statusMap[status] || statusMap.pending;
@@ -28,7 +28,7 @@ export default function PublicationCard({ publication, onEdit }) {
                 <div className="pub-card__badges">
                     <span className={`badge ${className}`}>● {label}</span>
                     <span className={`badge ${isExperience ? "badge-exp" : "badge-place"}`}>
-                        {isExperience ? "EXPERIENCIA" : "ALOJAMIENTO"}
+                        {isExperience ? "EXPERIENCIA" : "LUGAR"}
                     </span>
                 </div>
                 <h4 className="pub-card__title">{publication.title}</h4>

@@ -6,7 +6,7 @@ import ChatMessage from "./ChatMessage";
 const WELCOME = {
     id: 0,
     role: "bot",
-    text: "¡Hola! Soy el asistente turístico de TurismoVE. ¿En qué puedo ayudarte hoy? Puedo recomendarte destinos, experiencias y alojamientos en Venezuela. 🌴"
+    text: "¡Hola! Soy el asistente turístico de TurismoVE. ¿En qué puedo ayudarte hoy? Puedo recomendarte destinos y experiencias en Venezuela. 🌴"
 };
 
 export default function ChatWindow({ onClose }) {
@@ -14,6 +14,7 @@ export default function ChatWindow({ onClose }) {
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
     const bottomRef = useRef(null);
+    const conversationIdRef = useRef(null);
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -29,7 +30,11 @@ export default function ChatWindow({ onClose }) {
         setMessages(prev => [...prev, { id: "typing", role: "bot", typing: true }]);
 
         try {
-            const res = await api.post("/ai/chat", { message: text });
+            const res = await api.post("/ai/chat", {
+                message: text,
+                conversationId: conversationIdRef.current
+            });
+            conversationIdRef.current = res.data.conversationId;
             setMessages(prev => [
                 ...prev.filter(m => m.id !== "typing"),
                 { id: Date.now(), role: "bot", text: res.data.reply }
