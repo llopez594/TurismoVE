@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useRef } from "react";
 import api from "../services/api";
 import { getToken, getUser, saveSession, clearSession } from "../utils/storage";
 
@@ -8,6 +8,11 @@ export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    // Modal de auth
+    const [authModalOpen, setAuthModalOpen] = useState(false);
+    const [authModalView, setAuthModalView] = useState("login");
+    const onSuccessCallbackRef = useRef(null);
 
     useEffect(() => {
         const savedToken = getToken();
@@ -25,6 +30,13 @@ export function AuthProvider({ children }) {
         setUser(userData);
         setToken(tokenData);
         saveSession(userData, tokenData);
+
+        // Si hay un callback pendiente, ejecutarlo después del login
+        if (onSuccessCallbackRef.current) {
+            await onSuccessCallbackRef.current(userData);
+            onSuccessCallbackRef.current = null;
+        }
+
         return userData;
     }
 
@@ -34,6 +46,12 @@ export function AuthProvider({ children }) {
         setUser(userData);
         setToken(tokenData);
         saveSession(userData, tokenData);
+
+        if (onSuccessCallbackRef.current) {
+            await onSuccessCallbackRef.current(userData);
+            onSuccessCallbackRef.current = null;
+        }
+
         return userData;
     }
 
@@ -49,17 +67,27 @@ export function AuthProvider({ children }) {
         saveSession(updated, token);
     }
 
+    // Abre el modal de auth y registra un callback que se ejecuta tras login/registro exitoso
+    function openAuthModal(view = "login", onSuccess = null) {
+        onSuccessCallbackRef.current = onSuccess;
+        setAuthModalView(view);
+        setAuthModalOpen(true);
+    }
+
+    function closeAuthModal() {
+        setAuthModalOpen(false);
+        onSuccessCallbackRef.current = null;
+    }
+
     return (
         <AuthContext.Provider value={{
-            user,
-            token,
-            loading,
+            user, token, loading,
             isAuthenticated: !!user,
             isAdmin: user?.role === "admin",
-            login,
-            register,
-            logout,
-            updateUser
+            login, register, logout, updateUser,
+            // Modal
+            authModalOpen, authModalView,
+            openAuthModal, closeAuthModal
         }}>
             {children}
         </AuthContext.Provider>

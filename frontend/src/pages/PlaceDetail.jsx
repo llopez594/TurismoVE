@@ -1,19 +1,57 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { MapPin, Star, Clock, DollarSign, Wifi, Zap, Droplets, ArrowLeft, MessageSquare } from "lucide-react";
+import { MapPin, Star, Clock, DollarSign, Wifi, Zap, Droplets, ArrowLeft, Send } from "lucide-react";
 import api, { unwrapResponse } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
-const SERVICE_ICONS = { "Wi-Fi Starlink": Wifi, "Wi-Fi": Wifi, "Luz Eléctrica 24/7": Zap, "Luz 24/7": Zap, "Agua Constante": Droplets };
+const SERVICE_ICONS = {
+    "Wi-Fi Starlink": Wifi, "Wi-Fi": Wifi,
+    "Luz Eléctrica 24/7": Zap, "Luz 24/7": Zap,
+    "Agua Constante": Droplets
+};
+
+function StarRating({ value, onChange, interactive = false }) {
+    const [hovered, setHovered] = useState(0);
+    const display = interactive ? (hovered || value) : value;
+    return (
+        <div style={{ display: "flex", gap: "4px" }}>
+            {[1, 2, 3, 4, 5].map(n => (
+                <button
+                    key={n}
+                    type="button"
+                    onClick={() => interactive && onChange && onChange(n)}
+                    onMouseEnter={() => interactive && setHovered(n)}
+                    onMouseLeave={() => interactive && setHovered(0)}
+                    style={{ background: "none", border: "none", cursor: interactive ? "pointer" : "default", padding: 0 }}
+                    disabled={!interactive}
+                >
+                    <Star
+                        size={28}
+                        fill={n <= display ? "#F5A623" : "none"}
+                        color={n <= display ? "#F5A623" : "#D1D5DB"}
+                        strokeWidth={1.5}
+                    />
+                </button>
+            ))}
+        </div>
+    );
+}
 
 export default function PlaceDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, openAuthModal } = useAuth();
+
     const [place, setPlace] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-    const [reviewOpen, setReviewOpen] = useState(false);
+
+    // Estado de la reseña
+    const [rating, setRating] = useState(5);
+    const [comment, setComment] = useState("");
+    const [sending, setSending] = useState(false);
+    const [reviewSent, setReviewSent] = useState(false);
+    const [reviewError, setReviewError] = useState("");
 
     useEffect(() => {
         api.get(`/places/${id}`)
@@ -25,21 +63,57 @@ export default function PlaceDetail() {
             .finally(() => setLoading(false));
     }, [id]);
 
-    if (loading) return <div style={{ display: "flex", justifyContent: "center", padding: "80px" }}><div className="spinner" /></div>;
-    if (error || !place) return <div style={{ textAlign: "center", padding: "80px", color: "var(--color-text-muted)" }}>{error || "Lugar no encontrado."}</div>;
+    async function submitReview() {
+        if (!comment.trim()) {
+            setReviewError("Escribe un comentario antes de enviar.");
+            return;
+        }
+        setSending(true);
+        setReviewError("");
+        try {
+            await api.post(`/places/${id}/reviews`, { rating, comment });
+            setReviewSent(true);
+            setComment("");
+            setRating(5);
+        } catch (err) {
+            setReviewError(err.response?.data?.message || "Error al enviar la reseña.");
+        } finally {
+            setSending(false);
+        }
+    }
 
-    const rating = parseFloat(place.ratingAverage || 0);
+    function handleSendReview() {
+        if (!isAuthenticated) {
+            // Guarda la intención y abre el modal de login
+            // Cuando el login sea exitoso, envía la reseña automáticamente
+            openAuthModal("login", async () => {
+                await submitReview();
+            });
+            return;
+        }
+        submitReview();
+    }
+
+    if (loading) return (
+        <div style={{ display: "flex", justifyContent: "center", padding: "80px" }}>
+            <div className="spinner" />
+        </div>
+    );
+
+    if (error || !place) return (
+        <div style={{ textAlign: "center", padding: "80px", color: "var(--color-text-muted)" }}>
+            {error || "Lugar no encontrado."}
+        </div>
+    );
+
+    const rating_ = parseFloat(place.ratingAverage || 0);
 
     let services = [];
     if (place.services) {
         if (Array.isArray(place.services)) {
             services = place.services;
         } else if (typeof place.services === "string") {
-            try {
-                services = JSON.parse(place.services);
-            } catch (e) {
-                services = [];
-            }
+            try { services = JSON.parse(place.services); } catch { services = []; }
         }
     }
 
@@ -70,9 +144,9 @@ export default function PlaceDetail() {
                         <div className="detail-page__meta">
                             <span className="detail-page__location"><MapPin size={15} /> {place.location}</span>
                             {place.address && <span className="detail-page__address">{place.address}</span>}
-                            {rating > 0 && (
+                            {rating_ > 0 && (
                                 <span className="detail-page__rating">
-                                    <Star size={15} fill="#F5A623" color="#F5A623" /> {rating.toFixed(1)} de 5
+                                    <Star size={15} fill="#F5A623" color="#F5A623" /> {rating_.toFixed(1)} de 5
                                 </span>
                             )}
                         </div>
@@ -95,18 +169,54 @@ export default function PlaceDetail() {
                             </div>
                         )}
 
+                        {/* ── Sección de reseñas ── */}
                         <div className="detail-page__reviews-section">
                             <h3>Reseñas</h3>
-                            {isAuthenticated ? (
-                                <button className="btn btn-outline" onClick={() => setReviewOpen(true)}>
-                                    <MessageSquare size={16} /> Escribir una reseña
-                                </button>
+
+                            {reviewSent ? (
+                                <div className="review-box review-box--success">
+                                    ✓ ¡Reseña enviada correctamente! Gracias por tu opinión.
+                                </div>
                             ) : (
-                                <p style={{ color: "var(--color-text-muted)", fontSize: "var(--font-size-sm)" }}>
-                                    Inicia sesión para dejar una reseña.
-                                </p>
+                                <div className="review-box">
+                                    <p className="review-box__label">
+                                        ¿Cuál es tu calificación?
+                                    </p>
+                                    <StarRating value={rating} interactive onChange={setRating} />
+
+                                    <textarea
+                                        className="review-box__textarea"
+                                        placeholder="Comparte tu experiencia en este lugar..."
+                                        value={comment}
+                                        onChange={e => setComment(e.target.value)}
+                                        rows={3}
+                                    />
+
+                                    {!isAuthenticated && (
+                                        <p className="review-box__hint">
+                                            💡 Inicia sesión para publicar tu reseña. Tu comentario no se perderá.
+                                        </p>
+                                    )}
+
+                                    {reviewError && (
+                                        <p className="review-box__error">{reviewError}</p>
+                                    )}
+
+                                    <button
+                                        className="btn btn-primary"
+                                        onClick={handleSendReview}
+                                        disabled={sending}
+                                        style={{ alignSelf: "flex-end" }}
+                                    >
+                                        <Send size={15} />
+                                        {sending ? "Enviando..." : isAuthenticated ? "Publicar reseña" : "Iniciar sesión y publicar"}
+                                    </button>
+                                </div>
                             )}
-                            <p className="detail-page__reviews-coming">Las reseñas estarán disponibles próximamente.</p>
+
+                            <p className="detail-page__reviews-coming">
+                                Las reseñas de otros usuarios estarán disponibles próximamente.
+                            </p>
                         </div>
                     </div>
 
@@ -121,8 +231,8 @@ export default function PlaceDetail() {
                             )}
                             {(place.checkIn || place.checkOut) && (
                                 <div className="detail-page__schedule">
-                                    {place.checkIn && <span><Clock size={14} /> Check-in: {place.checkIn}</span>}
-                                    {place.checkOut && <span><Clock size={14} /> Check-out: {place.checkOut}</span>}
+                                    {place.checkIn && <span><Clock size={14} /> Horario apertura: {place.checkIn}</span>}
+                                    {place.checkOut && <span><Clock size={14} /> Horario de cierre: {place.checkOut}</span>}
                                 </div>
                             )}
                             {place.category && (
@@ -159,6 +269,15 @@ export default function PlaceDetail() {
                 .detail-page__price small { font-size: var(--font-size-sm); color: var(--color-text-muted); }
                 .detail-page__schedule { display: flex; flex-direction: column; gap: 8px; font-size: var(--font-size-sm); color: var(--color-text-muted); }
                 .detail-page__schedule span { display: flex; align-items: center; gap: 6px; }
+
+                .review-box { background: var(--color-white); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+                .review-box--success { background: #D1FAE5; border-color: #10B981; color: #065F46; font-weight: 600; padding: 16px 20px; }
+                .review-box__label { font-size: var(--font-size-sm); font-weight: 600; color: var(--color-text); }
+                .review-box__textarea { width: 100%; padding: 12px 14px; background: var(--color-bg-input); border: 1.5px solid transparent; border-radius: var(--radius); font-size: var(--font-size-sm); color: var(--color-text); resize: vertical; outline: none; font-family: inherit; transition: border-color var(--transition); }
+                .review-box__textarea:focus { border-color: var(--color-primary); background: var(--color-white); }
+                .review-box__hint { font-size: var(--font-size-xs); color: var(--color-text-muted); background: #FEF3C7; padding: 8px 12px; border-radius: var(--radius-sm); }
+                .review-box__error { font-size: var(--font-size-sm); color: var(--color-error); }
+
                 @media (max-width: 900px) { .detail-page__layout { grid-template-columns: 1fr; } .detail-page__image { height: 260px; } }
             `}</style>
         </div>

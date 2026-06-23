@@ -4,19 +4,17 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import AuthModal from "../auth/AuthModal";
 import ChatWidget from "../chatbot/ChatWidget";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Layout() {
-    const [authOpen, setAuthOpen] = useState(false);
-    const [authView, setAuthView] = useState("login");
+    const { authModalOpen, authModalView, closeAuthModal, openAuthModal } = useAuth();
 
     function openLogin() {
-        setAuthView("login");
-        setAuthOpen(true);
+        openAuthModal("login");
     }
 
     function openRegister() {
-        setAuthView("register");
-        setAuthOpen(true);
+        openAuthModal("register");
     }
 
     return (
@@ -27,9 +25,9 @@ export default function Layout() {
             </main>
             <Footer />
             <AuthModal
-                isOpen={authOpen}
-                onClose={() => setAuthOpen(false)}
-                initialView={authView}
+                isOpen={authModalOpen}
+                onClose={closeAuthModal}
+                initialView={authModalView}
             />
             <ChatWidget />
         </div>
