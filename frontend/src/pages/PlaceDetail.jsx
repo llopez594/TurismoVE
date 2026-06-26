@@ -194,7 +194,7 @@ export default function PlaceDetail() {
 
                                     {!isAuthenticated && (
                                         <p className="review-box__hint">
-                                            💡 Inicia sesión para publicar tu reseña. Tu comentario no se perderá.
+                                             Inicia sesión para publicar tu reseña. Tu comentario no se perderá.
                                         </p>
                                     )}
 

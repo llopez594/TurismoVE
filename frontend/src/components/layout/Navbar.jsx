@@ -35,6 +35,7 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
                         <Link to="/admin" className="navbar__link navbar__link--admin">Admin</Link>
                     )}
                 </nav>
+                
 
                 <div className="navbar__auth hide-mobile">
                     {isAuthenticated ? (

@@ -76,7 +76,6 @@ export default function AdminDashboard() {
                     <div className="admin-page__loading"><div className="spinner" /></div>
                 ) : pending.length === 0 ? (
                     <div className="admin-page__empty">
-                        <span style={{ fontSize: "2.5rem" }}>✅</span>
                         <p>No hay lugares pendientes de aprobación.</p>
                     </div>
                 ) : (

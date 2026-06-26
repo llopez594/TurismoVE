@@ -57,7 +57,6 @@ export default function Search() {
                     <div className="search-page__error">{error}</div>
                 ) : places.length === 0 ? (
                     <div className="search-page__empty">
-                        <span style={{ fontSize: "2.5rem" }}>🔍</span>
                         <p>No se encontraron lugares con esos filtros.</p>
                     </div>
                 ) : (
