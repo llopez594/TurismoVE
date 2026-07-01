@@ -14,7 +14,9 @@ export default function Search() {
 
     const [searchText, setSearchText] = useState(searchParams.get("search") || "");
     const [location, setLocation] = useState("");
-    const [categoryId, setCategoryId] = useState("");
+    const [categoryId, setCategoryId] = useState(
+        searchParams.get("categoria") || ""
+    );
 
     useEffect(() => {
         setLoading(true);
@@ -34,6 +36,10 @@ export default function Search() {
             .catch(() => setError("Error al cargar los lugares."))
             .finally(() => setLoading(false));
     }, [searchText, categoryId, page]);
+
+    useEffect(() => {
+    setCategoryId(searchParams.get("categoria") || "");
+    }, [searchParams]);
 
     return (
         <div className="search-page">

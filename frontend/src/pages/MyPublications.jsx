@@ -6,7 +6,7 @@ import PublicationCard from "../components/publications/PublicationCard";
 import EditPlaceModal from "../components/publications/EditPlaceModal";
 
 export default function MyPublications() {
-    const { user, isAuthenticated, loading: authLoading } = useAuth();
+    const { user, isAuthenticated, isAdmin, loading: authLoading } = useAuth();
     const navigate = useNavigate();
     const [publications, setPublications] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -45,19 +45,45 @@ export default function MyPublications() {
                     <h3 className="user-sidebar__name">{user?.name}</h3>
                     <p className="user-sidebar__email">{user?.email}</p>
                     <nav className="user-sidebar__nav">
-                        <Link to="/perfil" className="user-sidebar__link">Configuración de Perfil</Link>
-                        <Link to="/mis-publicaciones" className="user-sidebar__link user-sidebar__link--active">Mis Publicaciones</Link>
-                        <Link to="/publicar" className="user-sidebar__link">Publicar Sitio / Experiencia</Link>
+                        {isAuthenticated && (
+                            isAdmin ? (
+                                <>
+                                    <Link to="/perfil" className="user-sidebar__link">Configuración de Perfil</Link>
+                                    <Link to="/mis-publicaciones" className="user-sidebar__link user-sidebar__link--active">Publicaciones</Link>
+                                   </>
+                            ) : (
+                                <>
+                                    <Link to="/perfil" className="user-sidebar__link">Configuración de Perfil</Link>
+                                    <Link to="/mis-publicaciones" className="user-sidebar__link user-sidebar__link--active">Mis Publicaciones</Link>
+                                    <Link to="/publicar" className="user-sidebar__link">Publicar Lugar / Experiencia</Link>
+                                </>
+                            )
+                        )}
+
                     </nav>
                 </aside>
 
                 <main className="my-pubs-page__main">
                     <div className="my-pubs-page__header">
-                        <h1>Mis Publicaciones</h1>
-                        <p className="my-pubs-page__subtitle">
-                            A continuación se muestran los lugares y experiencias que has publicado.
-                            Los lugares nuevos inician en estado <strong>Pendiente de Aprobación</strong>.
-                        </p>
+                    {isAuthenticated && (
+                        isAdmin? (
+                            <>
+                                <h1>Publicaciones</h1>
+                                <p className="my-pubs-page__subtitle">
+                                    A continuación se muestran los lugares y experiencias <strong>aprobados.</strong>
+                                </p>
+                            </>
+                        ) : (
+                            <>
+                                <h1>Mis Publicaciones</h1>
+                                <p className="my-pubs-page__subtitle">
+                                    A continuación se muestran los lugares y experiencias que has publicado.
+                                    Los lugares nuevos inician en estado <strong>Pendiente de Aprobación</strong>.
+                                </p>
+                            </>
+                        )
+                    )}
+
                     </div>
 
                     {loading ? (

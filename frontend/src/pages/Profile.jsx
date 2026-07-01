@@ -6,7 +6,7 @@ import AvatarUpdate from "../components/profile/AvatarUpdate";
 import ChangePasswordForm from "../components/profile/ChangePasswordForm";
 
 export default function Profile() {
-    const { user, isAuthenticated, loading: authLoading } = useAuth();
+    const { user, isAuthenticated, isAdmin, loading: authLoading } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -28,16 +28,28 @@ export default function Profile() {
                     <h3 className="user-sidebar__name">{user?.name}</h3>
                     <p className="user-sidebar__email">{user?.email}</p>
                     <nav className="user-sidebar__nav">
-                        <Link to="/perfil" className="user-sidebar__link user-sidebar__link--active">Configuración de Perfil</Link>
-                        <Link to="/mis-publicaciones" className="user-sidebar__link">Mis Publicaciones </Link>
-                        <Link to="/publicar" className="user-sidebar__link">Publicar Sitio / Experiencia </Link>
+                    {isAuthenticated && (
+                        isAdmin ? (
+                        <>
+                            <Link to="/perfil" className="user-sidebar__link user-sidebar__link--active">Configuración de Perfil</Link>
+                            <Link to="/mis-publicaciones" className="user-sidebar__link">Publicaciones </Link>
+                        </>
+                        ) : (
+                        <>
+                            <Link to="/perfil" className="user-sidebar__link user-sidebar__link--active">Configuración de Perfil</Link>
+                            <Link to="/mis-publicaciones" className="user-sidebar__link">Mis Publicaciones </Link>
+                            <Link to="/publicar" className="user-sidebar__link">Publicar Lugar / Experiencia </Link>
+                        </>
+                    )
+
+                    )}
                     </nav>
                 </aside>
 
                 <main className="profile-page__main">
                     <div className="profile-page__header">
-                        <h1>Panel de Usuario</h1>
-                        <p>Consulta tus publicaciones, gestiona tu información personal y publica nuevos sitios turísticos.</p>
+                        <h1>Configuracion de Perfil</h1>
+                        <p>Gestiona tu información personal. </p>
                     </div>
 
                     <div className="profile-page__sections">

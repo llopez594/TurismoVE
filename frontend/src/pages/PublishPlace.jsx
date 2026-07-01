@@ -28,7 +28,7 @@ export default function PublishPlace() {
                     <nav className="user-sidebar__nav">
                         <Link to="/perfil" className="user-sidebar__link">Configuración de Perfil</Link>
                         <Link to="/mis-publicaciones" className="user-sidebar__link">Mis Publicaciones</Link>
-                        <Link to="/publicar" className="user-sidebar__link user-sidebar__link--active">Publicar Sitio / Experiencia</Link>
+                        <Link to="/publicar" className="user-sidebar__link user-sidebar__link--active">Publicar Lugar / Experiencia</Link>
                     </nav>
                 </aside>
 
