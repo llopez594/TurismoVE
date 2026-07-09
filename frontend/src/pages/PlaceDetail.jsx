@@ -4,6 +4,11 @@ import { MapPin, Star, Clock, DollarSign, Wifi, Zap, Droplets, ArrowLeft, Send }
 import api, { unwrapResponse } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
+const DEFAULT_IMAGES = {
+    lugar:     "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800&auto=format&fit=crop",
+    actividad: "https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=800&auto=format&fit=crop"
+};
+
 const SERVICE_ICONS = {
     "Wi-Fi Starlink": Wifi, "Wi-Fi": Wifi,
     "Luz Eléctrica 24/7": Zap, "Luz 24/7": Zap,
@@ -166,11 +171,11 @@ export default function PlaceDetail() {
                 </button>
 
                 <div className="detail-page__image">
-                    {place.coverImage ? (
-                        <img src={place.coverImage} alt={place.title} />
-                    ) : (
-                        <div className="detail-page__image-placeholder" />
-                    )}
+                    <img
+                        src={place.coverImage || DEFAULT_IMAGES[place.type] || DEFAULT_IMAGES.lugar}
+                        alt={place.title}
+                        onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = DEFAULT_IMAGES[place.type] || DEFAULT_IMAGES.lugar; }}
+                    />
                     <span className={`badge ${isExperience ? "badge-exp" : "badge-place"} detail-page__type`}>
                         {isExperience ? "EXPERIENCIA" : "LUGAR"}
                     </span>

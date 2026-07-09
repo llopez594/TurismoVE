@@ -2,10 +2,17 @@ import { useNavigate } from "react-router-dom";
 import { MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 
+const DEFAULT_IMAGES = {
+    lugar:     "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800&auto=format&fit=crop",
+    actividad: "https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=800&auto=format&fit=crop"
+};
+
 export default function PublicationCard({ publication, onEdit }) {
     const [menuOpen, setMenuOpen] = useState(false);
     const isExperience = publication.type === "actividad";
     const status = publication.status || "pending";
+    const fallback = DEFAULT_IMAGES[publication.type] || DEFAULT_IMAGES.lugar;
+    const image = publication.coverImage || publication.cover_image || null;
 
     const statusMap = {
         approved: { label: "APROBADO", className: "badge-approved" },
@@ -17,8 +24,12 @@ export default function PublicationCard({ publication, onEdit }) {
     return (
         <div className="pub-card">
             <div className="pub-card__image">
-                {publication.coverImage ? (
-                    <img src={publication.coverImage} alt={publication.title} />
+                {image ? (
+                    <img
+                        src={image}
+                        alt={publication.title}
+                        onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = fallback; }}
+                    />
                 ) : (
                     <div className="pub-card__placeholder" />
                 )}

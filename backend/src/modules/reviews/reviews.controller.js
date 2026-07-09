@@ -1,4 +1,5 @@
 import { Review, User, Place } from "../../models/index.js";
+import { clearCache } from "../../middlewares/cache.middleware.js";
 
 export async function updateReview(req, res) {
     const placeId = Number(req.params.id);
@@ -34,6 +35,7 @@ export async function updateReview(req, res) {
             { ratingAverage: parseFloat(avg.toFixed(2)) },
             { where: { id: placeId } }
         );
+        clearCache();
 
         const updated = await Review.findByPk(reviewId, {
             include: [{ model: User, as: "author", attributes: ["id", "name", "avatar"] }]
@@ -122,6 +124,7 @@ export async function createReview(req, res) {
         const avg = allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length;
 
         await place.update({ ratingAverage: parseFloat(avg.toFixed(2)) });
+        clearCache();
 
         const reviewWithAuthor = await Review.findByPk(review.id, {
             include: [
@@ -172,6 +175,7 @@ export async function deleteReview(req, res) {
             { ratingAverage: parseFloat(avg.toFixed(2)) },
             { where: { id: placeId } }
         );
+        clearCache();
 
         return res.status(200).json({
             message: "Reseña eliminada correctamente."
