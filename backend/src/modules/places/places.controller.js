@@ -131,7 +131,8 @@ export async function createPlace(req, res) {
         cost,
         checkIn,
         checkOut,
-        services
+        services,
+        coverImage
     } = req.body;
 
     if (!title || !description || !location || !categoryId) {
@@ -160,6 +161,7 @@ export async function createPlace(req, res) {
             checkIn: checkIn || null,
             checkOut: checkOut || null,
             services: services || null,
+            coverImage: coverImage || null,
             ratingAverage: 0,
             status: "pending",
             userId: req.user.id
@@ -203,7 +205,8 @@ export async function updatePlace(req, res) {
             cost,
             checkIn,
             checkOut,
-            services
+            services,
+            coverImage
         } = req.body;
 
         await place.update({
@@ -216,7 +219,8 @@ export async function updatePlace(req, res) {
             cost: cost !== undefined ? Number(cost) : place.cost,
             checkIn: checkIn !== undefined ? checkIn : place.checkIn,
             checkOut: checkOut !== undefined ? checkOut : place.checkOut,
-            services: services !== undefined ? services : place.services
+            services: services !== undefined ? services : place.services,
+            coverImage: coverImage !== undefined ? coverImage : place.coverImage
         });
 
         clearCache();

@@ -12,6 +12,7 @@ export default function EditPlaceModal({ isOpen, onClose, publication, onSaveSuc
         checkIn: publication?.checkIn || "",
         checkOut: publication?.checkOut || "",
         description: publication?.description || "",
+        coverImage: publication?.coverImage || publication?.cover_image || "",
     });
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -30,6 +31,7 @@ export default function EditPlaceModal({ isOpen, onClose, publication, onSaveSuc
             checkIn: publication?.checkIn || "",
             checkOut: publication?.checkOut || "",
             description: publication?.description || "",
+            coverImage: publication?.coverImage || publication?.cover_image || "",
         });
         setError("");
 
@@ -67,6 +69,7 @@ export default function EditPlaceModal({ isOpen, onClose, publication, onSaveSuc
                 cost: form.cost ? Number(form.cost) : null,
                 checkIn: form.checkIn || null,
                 checkOut: form.checkOut || null,
+                coverImage: form.coverImage || null
             });
 
             if (onSaveSuccess) {
@@ -116,6 +119,11 @@ export default function EditPlaceModal({ isOpen, onClose, publication, onSaveSuc
                             <label className="edit-modal__label">Dirección Detallada</label>
                             <input name="address" className="input" value={form.address} onChange={handleChange} disabled={loading} />
                         </div>
+                    </div>
+
+                    <div className="edit-modal__group">
+                        <label className="edit-modal__label">Enlace de la Imagen de Portada (URL)</label>
+                        <input name="coverImage" className="input" value={form.coverImage} onChange={handleChange} disabled={loading} />
                     </div>
 
                     <div className="edit-modal__row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>

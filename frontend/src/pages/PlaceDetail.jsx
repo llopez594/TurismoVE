@@ -40,18 +40,21 @@ function StarRating({ value, onChange, interactive = false }) {
 export default function PlaceDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { isAuthenticated, openAuthModal } = useAuth();
+    const { isAuthenticated, user, openAuthModal } = useAuth();
 
     const [place, setPlace] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [reviews, setReviews] = useState([]);
 
-    // Estado de la reseña
+    // Estado del formulario de reseña
     const [rating, setRating] = useState(5);
     const [comment, setComment] = useState("");
     const [sending, setSending] = useState(false);
     const [reviewSent, setReviewSent] = useState(false);
     const [reviewError, setReviewError] = useState("");
+    const [myReview, setMyReview] = useState(null);   // reseña propia si existe
+    const [editMode, setEditMode] = useState(false);  // true = modo edición
 
     useEffect(() => {
         api.get(`/places/${id}`)
@@ -61,7 +64,41 @@ export default function PlaceDetail() {
             })
             .catch(() => setError("Lugar no encontrado."))
             .finally(() => setLoading(false));
+
+        api.get(`/places/${id}/reviews`)
+            .then(res => {
+                const data = unwrapResponse(res.data);
+                setReviews(data.data || data || []);
+            })
+            .catch(() => {});
     }, [id]);
+
+    // Detectar reseña propia cuando cambia el listado o el usuario
+    useEffect(() => {
+        if (!user || reviews.length === 0) { setMyReview(null); return; }
+        const own = reviews.find(r => r.userId === user.id || r.author?.id === user.id);
+        setMyReview(own || null);
+    }, [reviews, user]);
+
+    async function refreshData() {
+        const [revRes, placeRes] = await Promise.all([
+            api.get(`/places/${id}/reviews`),
+            api.get(`/places/${id}`)
+        ]);
+        const revData = unwrapResponse(revRes.data);
+        setReviews(revData.data || revData || []);
+        const placeData = unwrapResponse(placeRes.data);
+        setPlace(placeData.data || placeData);
+    }
+
+    function handleEditReview() {
+        if (!myReview) return;
+        setRating(myReview.rating);
+        setComment(myReview.comment || "");
+        setEditMode(true);
+        setReviewSent(false);
+        setReviewError("");
+    }
 
     async function submitReview() {
         if (!comment.trim()) {
@@ -71,10 +108,16 @@ export default function PlaceDetail() {
         setSending(true);
         setReviewError("");
         try {
-            await api.post(`/places/${id}/reviews`, { rating, comment });
+            if (editMode && myReview) {
+                await api.put(`/places/${id}/reviews/${myReview.id}`, { rating, comment });
+            } else {
+                await api.post(`/places/${id}/reviews`, { rating, comment });
+                setComment("");
+                setRating(5);
+            }
             setReviewSent(true);
-            setComment("");
-            setRating(5);
+            setEditMode(false);
+            await refreshData();
         } catch (err) {
             setReviewError(err.response?.data?.message || "Error al enviar la reseña.");
         } finally {
@@ -84,11 +127,7 @@ export default function PlaceDetail() {
 
     function handleSendReview() {
         if (!isAuthenticated) {
-            // Guarda la intención y abre el modal de login
-            // Cuando el login sea exitoso, envía la reseña automáticamente
-            openAuthModal("login", async () => {
-                await submitReview();
-            });
+            openAuthModal("login", async () => { await submitReview(); });
             return;
         }
         submitReview();
@@ -173,14 +212,38 @@ export default function PlaceDetail() {
                         <div className="detail-page__reviews-section">
                             <h3>Reseñas</h3>
 
-                            {reviewSent ? (
+                            {reviewSent && !editMode ? (
                                 <div className="review-box review-box--success">
-                                    ✓ ¡Reseña enviada correctamente! Gracias por tu opinión.
+                                    ✓ ¡Reseña {editMode ? "actualizada" : "enviada"} correctamente! Gracias por tu opinión.
+                                    <button
+                                        className="btn btn-outline"
+                                        style={{ marginTop: "8px", fontSize: "var(--font-size-sm)" }}
+                                        onClick={handleEditReview}
+                                    >
+                                        ✏️ Editar mi reseña
+                                    </button>
+                                </div>
+                            ) : (isAuthenticated && myReview && !editMode) ? (
+                                <div className="review-box" style={{ borderColor: "var(--color-primary)" }}>
+                                    <p className="review-box__label">Ya tienes una reseña publicada.</p>
+                                    <StarRating value={myReview.rating} />
+                                    {myReview.comment && (
+                                        <p style={{ fontSize: "var(--font-size-sm)", color: "var(--color-text-muted)", margin: 0 }}>
+                                            "{myReview.comment}"
+                                        </p>
+                                    )}
+                                    <button
+                                        className="btn btn-outline"
+                                        style={{ alignSelf: "flex-start", fontSize: "var(--font-size-sm)" }}
+                                        onClick={handleEditReview}
+                                    >
+                                        ✏️ Editar mi reseña
+                                    </button>
                                 </div>
                             ) : (
                                 <div className="review-box">
                                     <p className="review-box__label">
-                                        ¿Cuál es tu calificación?
+                                        {editMode ? "✏️ Editando tu reseña" : "¿Cuál es tu calificación?"}
                                     </p>
                                     <StarRating value={rating} interactive onChange={setRating} />
 
@@ -202,21 +265,55 @@ export default function PlaceDetail() {
                                         <p className="review-box__error">{reviewError}</p>
                                     )}
 
-                                    <button
-                                        className="btn btn-primary"
-                                        onClick={handleSendReview}
-                                        disabled={sending}
-                                        style={{ alignSelf: "flex-end" }}
-                                    >
-                                        <Send size={15} />
-                                        {sending ? "Enviando..." : isAuthenticated ? "Publicar reseña" : "Iniciar sesión y publicar"}
-                                    </button>
+                                    <div style={{ display: "flex", gap: "10px", alignSelf: "flex-end" }}>
+                                        {editMode && (
+                                            <button
+                                                type="button"
+                                                className="btn btn-outline"
+                                                onClick={() => { setEditMode(false); setReviewError(""); }}
+                                                disabled={sending}
+                                            >
+                                                Cancelar
+                                            </button>
+                                        )}
+                                        <button
+                                            className="btn btn-primary"
+                                            onClick={handleSendReview}
+                                            disabled={sending}
+                                        >
+                                            <Send size={15} />
+                                            {sending ? "Guardando..." : editMode ? "Guardar cambios" : isAuthenticated ? "Publicar reseña" : "Iniciar sesión y publicar"}
+                                        </button>
+                                    </div>
                                 </div>
                             )}
 
-                            <p className="detail-page__reviews-coming">
-                                Las reseñas de otros usuarios estarán disponibles próximamente.
-                            </p>
+                            <div className="detail-page__reviews-list" style={{ marginTop: "24px", display: "flex", flexDirection: "column", gap: "16px" }}>
+                                {reviews.length === 0 ? (
+                                    <p className="detail-page__reviews-empty" style={{ fontStyle: "italic", color: "var(--color-text-muted)", fontSize: "var(--font-size-sm)" }}>No hay reseñas para este lugar aún. ¡Sé el primero en dejar una!</p>
+                                ) : (
+                                    reviews.map((rev) => (
+                                        <div key={rev.id} className="review-item" style={{ background: "var(--color-white)", border: "1px solid var(--color-border)", borderRadius: "var(--radius-lg)", padding: "16px", display: "flex", flexDirection: "column", gap: "10px" }}>
+                                            <div className="review-item__header" style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+                                                <img 
+                                                    src={`/assets/${rev.author?.avatar || 'avatar1.png'}`} 
+                                                    alt={rev.author?.name} 
+                                                    style={{ width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover" }}
+                                                    onError={(e) => { e.target.src = '/assets/avatar1.png'; }}
+                                                />
+                                                <div className="review-item__author-info" style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+                                                    <span className="review-item__author-name" style={{ fontWeight: "600", fontSize: "var(--font-size-sm)", color: "var(--color-text)" }}>{rev.author?.name || "Usuario"}</span>
+                                                    <span className="review-item__date" style={{ fontSize: "var(--font-size-xs)", color: "var(--color-text-muted)" }}>{new Date(rev.createdAt || rev.created_at).toLocaleDateString()}</span>
+                                                </div>
+                                                <div className="review-item__stars">
+                                                    <StarRating value={rev.rating} />
+                                                </div>
+                                            </div>
+                                            {rev.comment && <p className="review-item__comment" style={{ fontSize: "var(--font-size-sm)", color: "var(--color-text)", margin: 0, lineHeight: "1.5" }}>{rev.comment}</p>}
+                                        </div>
+                                    ))
+                                )}
+                            </div>
                         </div>
                     </div>
 

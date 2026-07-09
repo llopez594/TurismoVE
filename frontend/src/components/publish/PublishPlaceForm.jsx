@@ -23,7 +23,8 @@ export default function PublishPlaceForm({ type = "lugar" }) {
     const [form, setForm] = useState({
         title: "", categoryId: "", cost: "",
         location: "", address: "", checkIn: "14:00",
-        checkOut: "11:00", services: [], description: ""
+        checkOut: "11:00", services: [], description: "",
+        coverImage: ""
     });
 
     useEffect(() => {
@@ -65,10 +66,11 @@ export default function PublishPlaceForm({ type = "lugar" }) {
                 cost: form.cost ? Number(form.cost) : null,
                 checkIn: form.checkIn || null,
                 checkOut: form.checkOut || null,
-                services: form.services.length > 0 ? form.services : null
+                services: form.services.length > 0 ? form.services : null,
+                coverImage: form.coverImage || null
             });
             setSuccess(true);
-            setForm({ title: "", categoryId: "", cost: "", location: "", address: "", checkIn: "14:00", checkOut: "11:00", services: [], description: "" });
+            setForm({ title: "", categoryId: "", cost: "", location: "", address: "", checkIn: "14:00", checkOut: "11:00", services: [], description: "", coverImage: "" });
         } catch (err) {
             setError(err.response?.data?.message || "Error al publicar. Intenta de nuevo.");
         } finally {
@@ -121,6 +123,11 @@ export default function PublishPlaceForm({ type = "lugar" }) {
                     <label>Dirección Detallada</label>
                     <input name="address" className="input" placeholder="ej. Sector Mucuchies, Km 45" value={form.address} onChange={handleChange} />
                 </div>
+            </div>
+
+            <div className="publish-form__group">
+                <label>Enlace de la Imagen de Portada (URL)</label>
+                <input name="coverImage" className="input" placeholder="ej. https://ejemplo.com/imagen.jpg" value={form.coverImage} onChange={handleChange} />
             </div>
 
             {type === "lugar" && (
