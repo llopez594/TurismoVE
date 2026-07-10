@@ -2,14 +2,14 @@ import { useNavigate } from "react-router-dom";
 import { Waves, Mountain, Building2, Compass, Landmark, UtensilsCrossed, Moon, ShoppingBag } from "lucide-react";
 
 const CATEGORIES = [
-    { name: "Playas",        icon: Waves,            color: "#0D7377" },
-    { name: "Montañas",      icon: Mountain,         color: "#2DA44E" },
-    { name: "Ciudades",      icon: Building2,        color: "#0969DA" },
-    { name: "Aventura",      icon: Compass,          color: "#E3B341" },
-    { name: "Cultura",       icon: Landmark,         color: "#6B46C1" },
-    { name: "Gastronomía",   icon: UtensilsCrossed,  color: "#CF222E" },
-    { name: "Vida nocturna", icon: Moon,             color: "#0D3B38" },
-    { name: "Compras",       icon: ShoppingBag,      color: "#8B5CF6" },
+    {id:1,  name: "Playas",       icon: Waves,            color: "#0D7377" },
+    {id:2, name: "Montañas",      icon: Mountain,         color: "#2DA44E" },
+    {id:3, name: "Ciudades",      icon: Building2,        color: "#0969DA" },
+    {id:4, name: "Aventura",      icon: Compass,          color: "#E3B341" },
+    {id:5, name: "Cultura",       icon: Landmark,         color: "#6B46C1" },
+    {id:6, name: "Gastronomía",   icon: UtensilsCrossed,  color: "#CF222E" },
+    {id:7, name: "Vida nocturna", icon: Moon,             color: "#0D3B38" },
+    {id:8, name: "Compras",       icon: ShoppingBag,      color: "#8B5CF6" },
 ];
 
 export default function CategoryGrid() {
@@ -26,7 +26,7 @@ export default function CategoryGrid() {
                             <button
                                 key={cat.name}
                                 className="category-item"
-                                onClick={() => navigate(`/buscar?categoria=${encodeURIComponent(cat.name)}`)}
+                                onClick={() => navigate(`/buscar?categoria=${cat.id}`)}
                             >
                                 <div className="category-item__icon" style={{ background: cat.color + "18", color: cat.color }}>
                                     <Icon size={24} />

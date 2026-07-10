@@ -6,12 +6,17 @@ import AvatarUpdate from "../components/profile/AvatarUpdate";
 import ChangePasswordForm from "../components/profile/ChangePasswordForm";
 
 export default function Profile() {
-    const { user, isAuthenticated } = useAuth();
+    const { user, isAuthenticated, isAdmin, loading: authLoading } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
+        if (authLoading) return;
         if (!isAuthenticated) navigate("/");
-    }, [isAuthenticated]);
+    }, [isAuthenticated, authLoading, navigate]);
+
+    if (authLoading) {
+        return <div style={{ display: "flex", justifyContent: "center", padding: "80px" }}><div className="spinner" /></div>;
+    }
 
     return (
         <div className="profile-page">
@@ -23,16 +28,28 @@ export default function Profile() {
                     <h3 className="user-sidebar__name">{user?.name}</h3>
                     <p className="user-sidebar__email">{user?.email}</p>
                     <nav className="user-sidebar__nav">
-                        <Link to="/perfil" className="user-sidebar__link user-sidebar__link--active">Configuración de Perfil →</Link>
-                        <Link to="/mis-publicaciones" className="user-sidebar__link">Mis Publicaciones →</Link>
-                        <Link to="/publicar" className="user-sidebar__link">Publicar Sitio / Experiencia →</Link>
+                    {isAuthenticated && (
+                        isAdmin ? (
+                        <>
+                            <Link to="/perfil" className="user-sidebar__link user-sidebar__link--active">Configuración de Perfil</Link>
+                            <Link to="/mis-publicaciones" className="user-sidebar__link">Publicaciones </Link>
+                        </>
+                        ) : (
+                        <>
+                            <Link to="/perfil" className="user-sidebar__link user-sidebar__link--active">Configuración de Perfil</Link>
+                            <Link to="/mis-publicaciones" className="user-sidebar__link">Mis Publicaciones </Link>
+                            <Link to="/publicar" className="user-sidebar__link">Publicar Lugar / Experiencia </Link>
+                        </>
+                    )
+
+                    )}
                     </nav>
                 </aside>
 
                 <main className="profile-page__main">
                     <div className="profile-page__header">
-                        <h1>Panel de Usuario</h1>
-                        <p>Consulta tus publicaciones, gestiona tu información personal y publica nuevos sitios turísticos.</p>
+                        <h1>Configuracion de Perfil</h1>
+                        <p>Gestiona tu información personal. </p>
                     </div>
 
                     <div className="profile-page__sections">
@@ -44,6 +61,13 @@ export default function Profile() {
             </div>
 
             <style>{`
+                .user-sidebar { background: var(--color-white); border-radius: var(--radius-xl); box-shadow: var(--shadow); padding: 28px 24px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; }
+                .user-sidebar__name { font-size: var(--font-size-lg); font-weight: 700; color: var(--color-text); }
+                .user-sidebar__email { font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: 8px; }
+                .user-sidebar__nav { width: 100%; display: flex; flex-direction: column; gap: 4px; }
+                .user-sidebar__link { display: block; padding: 10px 14px; border-radius: var(--radius); font-size: var(--font-size-sm); font-weight: 500; color: var(--color-text-muted); transition: all var(--transition); text-align: left; }
+                .user-sidebar__link:hover { background: var(--color-bg-input); color: var(--color-primary); }
+                .user-sidebar__link--active { background: #E8F5F5; color: var(--color-primary); font-weight: 700; }
                 .profile-page { padding: 40px 0 64px; }
                 .profile-page__inner { display: grid; grid-template-columns: 260px 1fr; gap: 40px; align-items: start; }
                 .profile-page__header { margin-bottom: 28px; }

@@ -1,20 +1,26 @@
 import { useNavigate } from "react-router-dom";
 import { MapPin, Star } from "lucide-react";
 
+const DEFAULT_IMAGES = {
+    lugar:     "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800&auto=format&fit=crop",
+    actividad: "https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=800&auto=format&fit=crop"
+};
+
 export default function PlaceCard({ place }) {
     const navigate = useNavigate();
 
-    const image = place.coverImage || place.cover_image || null;
+    const image = place.coverImage || place.cover_image || DEFAULT_IMAGES[place.type] || DEFAULT_IMAGES.lugar;
     const category = place.category?.name || "";
     const rating = parseFloat(place.ratingAverage || place.rating_average || 0);
     const cost = place.cost ? `$${Number(place.cost).toFixed(0)}` : null;
     const isExperience = place.type === "actividad";
+    const fallback = DEFAULT_IMAGES[place.type] || DEFAULT_IMAGES.lugar;
 
     return (
         <div className="place-card" onClick={() => navigate(`/lugares/${place.id}`)}>
             <div className="place-card__image">
                 {image ? (
-                    <img src={image} alt={place.title} />
+                    <img src={image} alt={place.title} onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = fallback; }} />
                 ) : (
                     <div className="place-card__placeholder" />
                 )}
@@ -26,7 +32,7 @@ export default function PlaceCard({ place }) {
                 )}
                 {category && (
                     <span className={`place-card__badge ${isExperience ? "badge-exp" : "badge-place"}`}>
-                        {isExperience ? "EXPERIENCIA" : "ALOJAMIENTO"}
+                        {isExperience ? "EXPERIENCIA" : "LUGAR"}
                     </span>
                 )}
             </div>

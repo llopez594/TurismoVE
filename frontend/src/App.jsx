@@ -16,7 +16,7 @@ function NotFound() {
             justifyContent: "center", minHeight: "60vh", gap: "16px",
             color: "var(--color-text-muted)"
         }}>
-            <span style={{ fontSize: "3rem" }}>🔍</span>
+            <span style={{ fontSize: "3rem" }}></span>
             <h2 style={{ color: "var(--color-text)" }}>Página no encontrada</h2>
             <p>La página que buscas no existe.</p>
             <a href="/" style={{ color: "var(--color-primary)", fontWeight: 700 }}>Volver al inicio</a>

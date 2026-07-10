@@ -7,7 +7,19 @@ export default function ExperienceCard({ experience }) {
 
     const image = experience.coverImage || experience.cover_image || null;
     const cost = experience.cost ? `$${Number(experience.cost).toFixed(0)}` : null;
-    const services = experience.services || [];
+    
+    let services = [];
+    if (experience.services) {
+        if (Array.isArray(experience.services)) {
+            services = experience.services;
+        } else if (typeof experience.services === "string") {
+            try {
+                services = JSON.parse(experience.services);
+            } catch (e) {
+                services = [];
+            }
+        }
+    }
 
     return (
         <div className={styles["exp-card"]} onClick={() => navigate(`/lugares/${experience.id}`)}>

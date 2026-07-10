@@ -1,32 +1,39 @@
 import { useNavigate } from "react-router-dom";
 import { PlusCircle, BookOpen } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
 export default function HostCTA() {
+     const {isAuthenticated} = useAuth();
     const navigate = useNavigate();
 
     return (
-        <section className="host-cta">
-            <div className="container host-cta__inner">
-                <div className="host-cta__text">
-                    <span className="host-cta__tag">PARA ANFITRIONES</span>
-                    <h2 className="host-cta__title">¿Tienes un espacio o experiencia para compartir?</h2>
-                    <p className="host-cta__desc">
-                        Comparte tu lugar turístico, posada, cabaña o experiencia con miles de turistas en TurismoVE.
-                        Publicar es gratis y lleva menos de 2 minutos.
-                    </p>
-                    <div className="host-cta__actions">
-                        <button className="btn btn-primary" onClick={() => navigate("/publicar")}>
-                            <PlusCircle size={18} /> Publicar mi espacio
-                        </button>
-                        <button className="btn btn-outline host-cta__outline" onClick={() => navigate("/mis-publicaciones")}>
-                            <BookOpen size={18} /> Ver mis publicaciones
-                        </button>
+    
+        <section>
+        {isAuthenticated &&(
+            <div className="host-cta">
+              <div className="container host-cta__inner">
+                 <div className="host-cta__text">
+                           <h2 className="host-cta__title">¿Tienes un espacio o experiencia para compartir?</h2>
+                           <p className="host-cta__desc">
+                             Comparte tu lugar turístico, posada, cabaña o experiencia con miles de turistas en TurismoVE.
+                            Publicar es gratis y lleva menos de 2 minutos.
+                          </p>
+                           <div className="host-cta__actions">
+                              <button className="btn btn-primary" onClick={() => navigate("/publicar")}>
+                                 <PlusCircle size={18} /> Publicar mi espacio
+                              </button>
+                               <button className="btn btn-outline host-cta__outline" onClick={() => navigate("/mis-publicaciones")}>
+                                   <BookOpen size={18} /> Ver mis publicaciones
+                            </button>
+                        </div>
+                       </div>
+                       <div className="host-cta__image">
+                           <img src="/assets/host-cta-illustration.png" alt="Publicar en TurismoVE" />
                     </div>
                 </div>
-                <div className="host-cta__image">
-                    <img src="/assets/host-cta-illustration.png" alt="Publicar en TurismoVE" />
-                </div>
             </div>
+        )}
+
 
             <style>{`
                 .host-cta { background: var(--color-primary-dark); padding: 56px 0; margin-top: 48px; }
@@ -47,5 +54,6 @@ export default function HostCTA() {
                 }
             `}</style>
         </section>
+        
     );
 }

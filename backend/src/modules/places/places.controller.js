@@ -93,8 +93,24 @@ export async function getPlaceById(req, res) {
             });
         }
 
+        // return res.status(200).json({
+        //     data: place
+        // }); Se cambio estas lineas por las de abajo, ya que es un String que contiene un JSON no es un array 
+        const item = place.get({ plain: true });
+
         return res.status(200).json({
-            data: place
+            data: {
+                ...item,
+                services: Array.isArray(item.services)
+                    ? item.services
+                    : item.services
+                        ? typeof item.services === "string"
+                            ? (() => {
+                                try { return JSON.parse(item.services); } catch (e) { return []; }
+                              })()
+                            : item.services
+                        : []
+            }
         });
     } catch (error) {
         return res.status(500).json({
@@ -115,7 +131,8 @@ export async function createPlace(req, res) {
         cost,
         checkIn,
         checkOut,
-        services
+        services,
+        coverImage
     } = req.body;
 
     if (!title || !description || !location || !categoryId) {
@@ -144,6 +161,7 @@ export async function createPlace(req, res) {
             checkIn: checkIn || null,
             checkOut: checkOut || null,
             services: services || null,
+            coverImage: coverImage || null,
             ratingAverage: 0,
             status: "pending",
             userId: req.user.id
@@ -187,7 +205,8 @@ export async function updatePlace(req, res) {
             cost,
             checkIn,
             checkOut,
-            services
+            services,
+            coverImage
         } = req.body;
 
         await place.update({
@@ -200,7 +219,8 @@ export async function updatePlace(req, res) {
             cost: cost !== undefined ? Number(cost) : place.cost,
             checkIn: checkIn !== undefined ? checkIn : place.checkIn,
             checkOut: checkOut !== undefined ? checkOut : place.checkOut,
-            services: services !== undefined ? services : place.services
+            services: services !== undefined ? services : place.services,
+            coverImage: coverImage !== undefined ? coverImage : place.coverImage
         });
 
         clearCache();
@@ -244,3 +264,45 @@ export async function deletePlace(req, res) {
         });
     }
 }
+
+export async function getUserPlaces(req, res) {
+    try {
+        const places = await Place.findAll({
+            where: { userId: req.user.id },
+            include: [
+                {
+                    model: Category,
+                    as: "category",
+                    attributes: ["id", "name"]
+                }
+            ],
+            order: [["createdAt", "DESC"]]
+        });
+
+        const parsedPlaces = places.map((place) => {
+            const item = place.get({ plain: true });
+            return {
+                ...item,
+                services: Array.isArray(item.services)
+                    ? item.services
+                    : item.services
+                        ? typeof item.services === "string"
+                            ? (() => {
+                                try { return JSON.parse(item.services); } catch (e) { return []; }
+                              })()
+                            : item.services
+                        : []
+            };
+        });
+
+        return res.status(200).json({
+            data: parsedPlaces
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error al obtener las publicaciones del usuario.",
+            error: error.message
+        });
+    }
+}
+

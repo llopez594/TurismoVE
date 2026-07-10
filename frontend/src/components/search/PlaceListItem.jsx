@@ -1,6 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { MapPin, Star, Wifi, Zap, Droplets } from "lucide-react";
 
+const DEFAULT_IMAGES = {
+    lugar:     "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800&auto=format&fit=crop",
+    actividad: "https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=800&auto=format&fit=crop"
+};
+
 const SERVICE_ICONS = {
     "Wi-Fi Starlink": Wifi,
     "Wi-Fi": Wifi,
@@ -11,18 +16,32 @@ const SERVICE_ICONS = {
 
 export default function PlaceListItem({ place }) {
     const navigate = useNavigate();
-    const image = place.coverImage || place.cover_image || null;
+    const image = place.coverImage || place.cover_image || DEFAULT_IMAGES[place.type] || DEFAULT_IMAGES.lugar;
+    const fallback = DEFAULT_IMAGES[place.type] || DEFAULT_IMAGES.lugar;
     const rating = parseFloat(place.ratingAverage || place.rating_average || 0);
     const cost = place.cost ? `$${Number(place.cost).toFixed(0)}` : null;
     const isExperience = place.type === "actividad";
-    const services = place.services || [];
+    
+    let services = [];
+    if (place.services) {
+        if (Array.isArray(place.services)) {
+            services = place.services;
+        } else if (typeof place.services === "string") {
+            try {
+                services = JSON.parse(place.services);
+            } catch (e) {
+                services = [];
+            }
+        }
+    }
+
     const category = place.category?.name || "";
 
     return (
         <div className="list-item" onClick={() => navigate(`/lugares/${place.id}`)}>
             <div className="list-item__image">
                 {image ? (
-                    <img src={image} alt={place.title} />
+                    <img src={image} alt={place.title} onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = fallback; }} />
                 ) : (
                     <div className="list-item__placeholder" />
                 )}

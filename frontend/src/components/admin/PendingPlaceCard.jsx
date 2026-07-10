@@ -15,7 +15,7 @@ export default function PendingPlaceCard({ place, onApprove, onReject }) {
                     <div className="pending-card__placeholder" />
                 )}
                 <span className={`badge ${isExperience ? "badge-exp" : "badge-place"} pending-card__type`}>
-                    {isExperience ? "EXPERIENCIA" : "ALOJAMIENTO"}
+                    {isExperience ? "EXPERIENCIA" : "LUGAR"}
                 </span>
             </div>
 

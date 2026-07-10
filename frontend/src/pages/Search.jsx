@@ -14,7 +14,9 @@ export default function Search() {
 
     const [searchText, setSearchText] = useState(searchParams.get("search") || "");
     const [location, setLocation] = useState("");
-    const [categoryId, setCategoryId] = useState("");
+    const [categoryId, setCategoryId] = useState(
+        searchParams.get("categoria") || ""
+    );
 
     useEffect(() => {
         setLoading(true);
@@ -31,9 +33,13 @@ export default function Search() {
                 setPlaces(data.data || []);
                 setTotal(data.total || 0);
             })
-            .catch(() => setError("Error al cargar los alojamientos."))
+            .catch(() => setError("Error al cargar los lugares."))
             .finally(() => setLoading(false));
     }, [searchText, categoryId, page]);
+
+    useEffect(() => {
+    setCategoryId(searchParams.get("categoria") || "");
+    }, [searchParams]);
 
     return (
         <div className="search-page">
@@ -57,7 +63,6 @@ export default function Search() {
                     <div className="search-page__error">{error}</div>
                 ) : places.length === 0 ? (
                     <div className="search-page__empty">
-                        <span style={{ fontSize: "2.5rem" }}>🔍</span>
                         <p>No se encontraron lugares con esos filtros.</p>
                     </div>
                 ) : (
@@ -70,9 +75,9 @@ export default function Search() {
                         </div>
                         {total > 10 && (
                             <div className="search-page__pagination">
-                                <button className="btn btn-outline" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>← Anterior</button>
+                                <button className="btn btn-outline" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}> Anterior</button>
                                 <span>Página {page}</span>
-                                <button className="btn btn-outline" onClick={() => setPage(p => p + 1)} disabled={page * 10 >= total}>Siguiente →</button>
+                                <button className="btn btn-outline" onClick={() => setPage(p => p + 1)} disabled={page * 10 >= total}>Siguiente </button>
                             </div>
                         )}
                     </>

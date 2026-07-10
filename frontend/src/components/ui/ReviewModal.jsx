@@ -30,7 +30,7 @@ export default function ReviewModal({ isOpen, onClose, placeName }) {
                 <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
                     <div style={{ textAlign: "center" }}>
                         <p style={{ fontSize: "var(--font-size-base)", color: "var(--color-text)", marginBottom: "16px" }}>
-                            ¿Cómo calificarías tu experiencia en este alojamiento?
+                            ¿Cómo calificarías tu experiencia en este lugar?
                         </p>
                         <div style={{ display: "flex", justifyContent: "center" }}>
                             <StarRating value={rating} interactive onChange={setRating} size={36} />
@@ -44,7 +44,7 @@ export default function ReviewModal({ isOpen, onClose, placeName }) {
                         <textarea
                             className="input"
                             rows={4}
-                            placeholder="Comparte los detalles de tu estadía y opinión del alojamiento..."
+                            placeholder="Comparte los detalles de tu estadía y opinión del lugar..."
                             value={comment}
                             onChange={e => setComment(e.target.value)}
                         />

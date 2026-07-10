@@ -17,35 +17,62 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
     return (
         <header className="navbar">
             <div className="container navbar__inner">
-                <Link to="/" className="navbar__logo">
-                    <img src="/assets/icon.png" alt="TurismoVE" width={32} height={32} />
-                    <span>TurismoVE <strong>Explorer</strong></span>
-                </Link>
+                {!isAuthenticated ?(
+                   <Link to="/" className="navbar__logo">
+                        <img src="/assets/icon.png" alt="TurismoVE" width={32} height={32} />
+                        <span>TurismoVE <strong>Explorer</strong></span>
+                    </Link>
+                ) : (
+                   <Link to="/admin" className="navbar__logo">
+                        <img src="/assets/icon.png" alt="TurismoVE" width={32} height={32} />
+                        <span>TurismoVE <strong>Explorer</strong></span>
+                    </Link>
+                )}
 
                 <nav className="navbar__links hide-mobile">
+                    {!isAuthenticated ?(
                     <Link to="/buscar" className="navbar__link">Explorar</Link>
-                    {isAuthenticated && (
-                        <>
-                            <Link to="/perfil" className="navbar__link">Mi perfil</Link>
-                            <Link to="/mis-publicaciones" className="navbar__link">Mis publicaciones</Link>
-                            <Link to="/publicar" className="navbar__link">Publicar</Link>
-                        </>
+                    ) : (
+                        <Link to="/perfil" className="navbar__link">
+                            Perfil
+                        </Link>
                     )}
-                    {isAdmin && (
-                        <Link to="/admin" className="navbar__link navbar__link--admin">Admin</Link>
+                        
+                    {isAuthenticated && (
+                        isAdmin ? (
+                            <>
+                                <Link to="/mis-publicaciones" className="navbar__link">
+                                    Publicaciones
+                                </Link>
+                            </>
+                        ) : (
+                            <>
+                                <Link to="/buscar" className="navbar__link">Explorar</Link>
+                                <Link to="/mis-publicaciones" className="navbar__link">
+                                    Mis publicaciones
+                                </Link>
+
+                                <Link to="/publicar" className="navbar__link">
+                                    Publicar
+                                </Link>
+                            </>
+                        )
                     )}
                 </nav>
+                
 
                 <div className="navbar__auth hide-mobile">
                     {isAuthenticated ? (
                         <div className="navbar__user">
-                            <img
-                                src={`/assets/${user.avatar || "avatar1.png"}`}
-                                alt={user.name}
-                                width={34} height={34}
-                                style={{ borderRadius: "50%", objectFit: "cover" }}
-                            />
-                            <span className="navbar__user-name">{user.name}</span>
+                            <Link to="/perfil" className="navbar__user-profile-link">
+                                <img
+                                    src={`/assets/${user.avatar || "avatar1.png"}`}
+                                    alt={user.name}
+                                    width={34} height={34}
+                                    style={{ borderRadius: "50%", objectFit: "cover" }}
+                                />
+                                <span className="navbar__user-name">{user.name}</span>
+                            </Link>
                             <button onClick={handleLogout} className="btn btn-outline" style={{ padding: "7px 16px" }}>
                                 <LogOut size={15} /> Salir
                             </button>
@@ -63,12 +90,14 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
                 <div className="navbar__mobile-controls hide-desktop">
                     <Bell size={22} style={{ color: "var(--color-white)" }} />
                     {isAuthenticated ? (
-                        <img
-                            src={`/assets/${user.avatar || "avatar1.png"}`}
-                            alt={user.name}
-                            width={32} height={32}
-                            style={{ borderRadius: "50%", objectFit: "cover" }}
-                        />
+                        <Link to="/perfil" style={{ display: "block" }}>
+                            <img
+                                src={`/assets/${user.avatar || "avatar1.png"}`}
+                                alt={user.name}
+                                width={32} height={32}
+                                style={{ borderRadius: "50%", objectFit: "cover" }}
+                            />
+                        </Link>
                     ) : (
                         <button onClick={onLoginClick} style={{ color: "var(--color-white)", background: "none", border: "none" }}>
                             <User size={22} />
@@ -82,27 +111,42 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
 
             {menuOpen && (
                 <div className="navbar__mobile-menu">
-                    <Link to="/buscar" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
-                        <MapPin size={18} /> Explorar
-                    </Link>
-                    {isAuthenticated && (
-                        <>
-                            <Link to="/perfil" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
+                    {!isAuthenticated ?(
+                        <Link to="/buscar" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
+                            <MapPin size={18} /> Explorar
+                        </Link>
+                    ) : (
+                        <Link to="/perfil" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
                                 <User size={18} /> Mi Perfil
-                            </Link>
-                            <Link to="/mis-publicaciones" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
-                                <BookOpen size={18} /> Mis Publicaciones
-                            </Link>
-                            <Link to="/publicar" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
-                                <PlusCircle size={18} /> Publicar
-                            </Link>
-                        </>
-                    )}
-                    {isAdmin && (
-                        <Link to="/admin" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
-                            <Shield size={18} /> Panel Admin
                         </Link>
                     )}
+
+                    {isAuthenticated && (
+                        isAdmin ? (
+                        <>
+                            <Link to="/mis-publicaciones" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
+                                    <BookOpen size={18} /> Publicaciones
+                                </Link>
+                            <Link to="/admin" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
+                                <Shield size={18} /> Panel Admin
+                            </Link>
+                        </>
+                        ) : (
+                            <>
+                                <Link to="/buscar" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
+                                    <MapPin size={18} /> Explorar
+                                </Link>
+                                <Link to="/mis-publicaciones" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
+                                    <BookOpen size={18} /> Mis Publicaciones
+                                </Link>
+                                <Link to="/publicar" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
+                                    <PlusCircle size={18} /> Publicar
+                                </Link>
+                            </>
+                        )
+   
+                    )}
+             
                     {!isAuthenticated ? (
                         <>
                             <button className="navbar__mobile-link" onClick={() => { onLoginClick(); setMenuOpen(false); }}>
@@ -130,7 +174,9 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
                 .navbar__link:hover { color: var(--color-primary); background: #F0FAFA; }
                 .navbar__link--admin { color: var(--color-primary); font-weight: 700; }
                 .navbar__auth { display: flex; align-items: center; gap: 12px; }
-                .navbar__user { display: flex; align-items: center; gap: 10px; }
+                .navbar__user { display: flex; align-items: center; gap: 16px; }
+                .navbar__user-profile-link { display: flex; align-items: center; gap: 10px; transition: all var(--transition); }
+                .navbar__user-profile-link:hover { color: var(--color-primary); opacity: 0.85; }
                 .navbar__user-name { font-size: var(--font-size-sm); font-weight: 600; color: var(--color-text); }
                 .navbar__mobile-controls { display: flex; align-items: center; gap: 16px; }
                 @media (max-width: 768px) {
