@@ -17,10 +17,19 @@ module.exports = {
             },
             
             {
-                name: "Administrador TurismoVE",
+                name: "Creador TurismoVE",
+                email: "creator@turismove.com",
+                password_hash: bcrypt.hashSync("Creator1234", 10),
+                role: "content_creator",
+                created_at: new Date(),
+                updated_at: new Date()
+            },
+
+            {
+                name: "Usuario TurismoVE",
                 email: "testuser@gmail.com",
                 password_hash: bcrypt.hashSync("password123", 10),
-                role: "admin",
+                role: "user",
                 created_at: new Date(),
                 updated_at: new Date()
             }

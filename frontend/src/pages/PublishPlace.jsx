@@ -1,20 +1,23 @@
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import PlaceTabs from "../components/publish/PlaceTabs";
+import PublishPlaceForm from "../components/publish/PublishPlaceForm";
 
 export default function PublishPlace() {
-    const { user, isAuthenticated, loading: authLoading } = useAuth();
+    const { user, isAuthenticated, isAdmin, isContentCreator, loading: authLoading } = useAuth();
     const navigate = useNavigate();
+    const canPublish = isAdmin || isContentCreator;
 
     useEffect(() => {
         if (authLoading) return;
-        if (!isAuthenticated) navigate("/");
-    }, [isAuthenticated, authLoading, navigate]);
+        if (!isAuthenticated || !canPublish) navigate("/");
+    }, [isAuthenticated, canPublish, authLoading, navigate]);
 
     if (authLoading) {
         return <div style={{ display: "flex", justifyContent: "center", padding: "80px" }}><div className="spinner" /></div>;
     }
+
+    if (!canPublish) return null;
 
     return (
         <div className="publish-page">
@@ -28,17 +31,17 @@ export default function PublishPlace() {
                     <nav className="user-sidebar__nav">
                         <Link to="/perfil" className="user-sidebar__link">Configuración de Perfil</Link>
                         <Link to="/mis-publicaciones" className="user-sidebar__link">Mis Publicaciones</Link>
-                        <Link to="/publicar" className="user-sidebar__link user-sidebar__link--active">Publicar Lugar / Experiencia</Link>
+                        <Link to="/publicar" className="user-sidebar__link user-sidebar__link--active">Publicar Lugar</Link>
                     </nav>
                 </aside>
 
                 <main className="publish-page__main">
                     <div className="publish-page__header">
-                        <h1>Publicar Sitio / Experiencia</h1>
-                        <p>Comparte tu lugar turístico, posada, cabaña o experiencia con miles de viajeros en TurismoVE.</p>
+                        <h1>Publicar Sitio</h1>
+                        <p>Comparte un lugar turístico para que sea revisado por un administrador.</p>
                     </div>
                     <div className="card" style={{ padding: "32px" }}>
-                        <PlaceTabs />
+                        <PublishPlaceForm />
                     </div>
                 </main>
             </div>

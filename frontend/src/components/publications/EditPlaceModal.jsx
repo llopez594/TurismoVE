@@ -6,7 +6,6 @@ export default function EditPlaceModal({ isOpen, onClose, publication, onSaveSuc
     const [form, setForm] = useState({
         title: publication?.title || "",
         categoryId: publication?.categoryId || "",
-        cost: publication?.cost || "",
         location: publication?.location || "",
         address: publication?.address || "",
         checkIn: publication?.checkIn || "",
@@ -20,12 +19,10 @@ export default function EditPlaceModal({ isOpen, onClose, publication, onSaveSuc
 
     useEffect(() => {
         if (!isOpen) return;
-        
-        // Reset form to latest publication details when opened
+
         setForm({
             title: publication?.title || "",
             categoryId: publication?.categoryId || "",
-            cost: publication?.cost !== null ? String(publication?.cost) : "",
             location: publication?.location || "",
             address: publication?.address || "",
             checkIn: publication?.checkIn || "",
@@ -66,7 +63,6 @@ export default function EditPlaceModal({ isOpen, onClose, publication, onSaveSuc
                 location: form.location,
                 address: form.address || null,
                 categoryId: Number(form.categoryId),
-                cost: form.cost ? Number(form.cost) : null,
                 checkIn: form.checkIn || null,
                 checkOut: form.checkOut || null,
                 coverImage: form.coverImage || null
@@ -105,20 +101,14 @@ export default function EditPlaceModal({ isOpen, onClose, publication, onSaveSuc
                             </select>
                         </div>
                         <div className="edit-modal__group">
-                            <label className="edit-modal__label">Costo (USD)</label>
-                            <input name="cost" type="number" className="input" value={form.cost} onChange={handleChange} disabled={loading} />
-                        </div>
-                    </div>
-
-                    <div className="edit-modal__row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-                        <div className="edit-modal__group">
                             <label className="edit-modal__label">Ubicación General</label>
                             <input name="location" className="input" value={form.location} onChange={handleChange} required disabled={loading} />
                         </div>
-                        <div className="edit-modal__group">
-                            <label className="edit-modal__label">Dirección Detallada</label>
-                            <input name="address" className="input" value={form.address} onChange={handleChange} disabled={loading} />
-                        </div>
+                    </div>
+
+                    <div className="edit-modal__group">
+                        <label className="edit-modal__label">Dirección Detallada</label>
+                        <input name="address" className="input" value={form.address} onChange={handleChange} disabled={loading} />
                     </div>
 
                     <div className="edit-modal__group">
@@ -128,11 +118,11 @@ export default function EditPlaceModal({ isOpen, onClose, publication, onSaveSuc
 
                     <div className="edit-modal__row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
                         <div className="edit-modal__group">
-                            <label className="edit-modal__label">Horario Check-in</label>
+                            <label className="edit-modal__label">Horario apertura</label>
                             <input name="checkIn" className="input" value={form.checkIn} onChange={handleChange} disabled={loading} />
                         </div>
                         <div className="edit-modal__group">
-                            <label className="edit-modal__label">Horario Check-out</label>
+                            <label className="edit-modal__label">Horario de cierre</label>
                             <input name="checkOut" className="input" value={form.checkOut} onChange={handleChange} disabled={loading} />
                         </div>
                     </div>

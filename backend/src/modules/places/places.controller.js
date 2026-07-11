@@ -8,7 +8,6 @@ export async function getPlaces(req, res) {
     const categoryId = req.query.categoryId ? Number(req.query.categoryId) : null;
     const search = req.query.search ? String(req.query.search).trim() : "";
     const type = req.query.type || null;
-
     const where = { status: "approved" };
 
     if (categoryId) {
@@ -35,6 +34,11 @@ export async function getPlaces(req, res) {
                     model: Category,
                     as: "category",
                     attributes: ["id", "name"]
+                },
+                {
+                    model: User,
+                    as: "author",
+                    attributes: ["id", "name", "email", "avatar"]
                 }
             ],
             order: [["createdAt", "DESC"]],
@@ -127,8 +131,6 @@ export async function createPlace(req, res) {
         location,
         address,
         categoryId,
-        type,
-        cost,
         checkIn,
         checkOut,
         services,
@@ -156,12 +158,13 @@ export async function createPlace(req, res) {
             location,
             address: address || null,
             categoryId: Number(categoryId),
-            type: type || "lugar",
-            cost: cost ? Number(cost) : null,
+            type: "lugar",
+            cost: null,
             checkIn: checkIn || null,
             checkOut: checkOut || null,
             services: services || null,
             coverImage: coverImage || null,
+            createdByLabel: req.user.name || null,
             ratingAverage: 0,
             status: "pending",
             userId: req.user.id
@@ -185,11 +188,9 @@ export async function updatePlace(req, res) {
     const id = Number(req.params.id);
 
     try {
-        const place = await Place.findOne({
-            where: { id, userId: req.user.id }
-        });
+        const place = await Place.findByPk(id);
 
-        if (!place) {
+        if (!place || (req.user.role !== "admin" && place.userId !== req.user.id)) {
             return res.status(404).json({
                 message: "Lugar no encontrado o no tienes permiso para editarlo."
             });
@@ -201,8 +202,6 @@ export async function updatePlace(req, res) {
             location,
             address,
             categoryId,
-            type,
-            cost,
             checkIn,
             checkOut,
             services,
@@ -215,8 +214,8 @@ export async function updatePlace(req, res) {
             location: location || place.location,
             address: address !== undefined ? address : place.address,
             categoryId: categoryId ? Number(categoryId) : place.categoryId,
-            type: type || place.type,
-            cost: cost !== undefined ? Number(cost) : place.cost,
+            type: "lugar",
+            cost: null,
             checkIn: checkIn !== undefined ? checkIn : place.checkIn,
             checkOut: checkOut !== undefined ? checkOut : place.checkOut,
             services: services !== undefined ? services : place.services,
@@ -274,6 +273,11 @@ export async function getUserPlaces(req, res) {
                     model: Category,
                     as: "category",
                     attributes: ["id", "name"]
+                },
+                {
+                    model: User,
+                    as: "author",
+                    attributes: ["id", "name", "email", "avatar"]
                 }
             ],
             order: [["createdAt", "DESC"]]

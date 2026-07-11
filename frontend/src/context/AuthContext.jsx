@@ -84,6 +84,7 @@ export function AuthProvider({ children }) {
             user, token, loading,
             isAuthenticated: !!user,
             isAdmin: user?.role === "admin",
+            isContentCreator: user?.role === "content_creator",
             login, register, logout, updateUser,
             // Modal
             authModalOpen, authModalView,

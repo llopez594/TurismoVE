@@ -57,11 +57,6 @@ export const CATALOG_TOOLS = [
                         type: "string",
                         description: "Estado, ciudad o zona solicitada por el usuario."
                     },
-                    tipo: {
-                        type: "string",
-                        enum: ["lugar", "actividad"],
-                        description: "Tipo de elemento solicitado."
-                    },
                     busqueda: {
                         type: "string",
                         description: "Nombre, característica o palabra clave adicional para buscar en el catálogo."
@@ -115,7 +110,7 @@ function buildLocationFilter(terms) {
 }
 
 function searchIsMentioned(search, message) {
-    const genericTerms = new Set(["parque", "lugar", "sitio", "actividad"]);
+    const genericTerms = new Set(["parque", "lugar", "sitio"]);
     const relevantTerms = normalizeText(search)
         .split(/\s+/)
         .filter((term) => term.length >= 4 && !genericTerms.has(term));
@@ -197,22 +192,15 @@ export async function executeCatalogTool(toolCall, options = {}) {
     ) {
         search = "";
     }
-    const requestedType = locationChanged
-        && args.tipo
-        && !filterIsMentioned(args.tipo, currentMessage)
-        ? null
-        : args.tipo || (!locationChanged ? options.defaults?.tipo : null);
-    const type = ["lugar", "actividad"].includes(requestedType) ? requestedType : null;
     const limit = Math.min(Math.max(Number(args.limite) || 5, 1), MAX_RESULTS);
     const excludeIds = [...(args.excluir_ids ?? []), ...(options.excludeIds ?? [])]
         .map(Number)
         .filter((id) => Number.isInteger(id) && id > 0);
-    const where = { status: "approved" };
+    const where = { status: "approved", type: "lugar" };
     const filters = [];
     let searchFilter = null;
     let locationFilter = null;
 
-    if (type) where.type = type;
     if (excludeIds.length) where.id = { [Op.notIn]: [...new Set(excludeIds)] };
 
     if (location) {
@@ -250,8 +238,6 @@ export async function executeCatalogTool(toolCall, options = {}) {
             "description",
             "location",
             "address",
-            "type",
-            "cost",
             "checkIn",
             "checkOut",
             "services",
@@ -311,10 +297,8 @@ export async function executeCatalogTool(toolCall, options = {}) {
             descripcion: item.description,
             ubicacion: item.location,
             direccion: item.address,
-            tipo: item.type,
             categoria: item.category?.name ?? null,
             puntuacion: Number(item.ratingAverage),
-            costo: item.cost === null ? null : Number(item.cost),
             horario: item.checkIn || item.checkOut
                 ? { entrada: item.checkIn, salida: item.checkOut }
                 : null,
@@ -339,7 +323,6 @@ export async function executeCatalogTool(toolCall, options = {}) {
         filtros: {
             categoria: category || null,
             ubicacion: location || null,
-            tipo: type,
             busqueda: search || null,
             excluir_ids: [...new Set(excludeIds)]
         },

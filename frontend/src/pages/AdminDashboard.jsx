@@ -4,31 +4,44 @@ import { useAuth } from "../context/AuthContext";
 import api, { unwrapResponse } from "../services/api";
 import PendingPlaceCard from "../components/admin/PendingPlaceCard";
 
+const ROLE_LABELS = {
+    user: "Usuario",
+    content_creator: "Creador de contenido",
+    admin: "Administrador"
+};
+
 export default function AdminDashboard() {
     const { isAuthenticated, isAdmin, loading: authLoading } = useAuth();
     const navigate = useNavigate();
     const [pending, setPending] = useState([]);
+    const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [toast, setToast] = useState("");
 
     useEffect(() => {
         if (authLoading) return;
         if (!isAuthenticated || !isAdmin) { navigate("/"); return; }
-        loadPending();
+        loadDashboard();
     }, [isAuthenticated, isAdmin, authLoading, navigate]);
 
     if (authLoading) {
         return <div style={{ display: "flex", justifyContent: "center", padding: "80px" }}><div className="spinner" /></div>;
     }
 
-    async function loadPending() {
+    async function loadDashboard() {
         setLoading(true);
         try {
-            const res = await api.get("/admin/places/pending");
-            const data = unwrapResponse(res.data);
-            setPending(data.data || []);
+            const [pendingRes, usersRes] = await Promise.all([
+                api.get("/admin/places/pending"),
+                api.get("/admin/users")
+            ]);
+            const pendingData = unwrapResponse(pendingRes.data);
+            const usersData = unwrapResponse(usersRes.data);
+            setPending(pendingData.data || []);
+            setUsers(usersData.data || []);
         } catch {
             setPending([]);
+            setUsers([]);
         } finally {
             setLoading(false);
         }
@@ -59,35 +72,74 @@ export default function AdminDashboard() {
         }
     }
 
+    async function handleRoleChange(userId, role) {
+        try {
+            const res = await api.patch(`/admin/users/${userId}/role`, { role });
+            const data = unwrapResponse(res.data);
+            setUsers(prev => prev.map(item => item.id === userId ? { ...item, role: data.data?.role || role } : item));
+            showToast("Rol actualizado correctamente.");
+        } catch (err) {
+            showToast(err.response?.data?.message || "Error al actualizar el rol.");
+        }
+    }
+
     return (
         <div className="admin-page">
             <div className="container">
                 <div className="admin-page__header">
                     <h1>Panel de Administración</h1>
-                    <p>Gestiona los lugares turísticos pendientes de aprobación.</p>
-                    {!loading && (
-                        <span className="admin-page__count">
-                            {pending.length} lugar{pending.length !== 1 ? "es" : ""} pendiente{pending.length !== 1 ? "s" : ""} de revisión
-                        </span>
-                    )}
+                    <p>Gestiona usuarios y lugares turísticos pendientes de aprobación.</p>
                 </div>
 
                 {loading ? (
                     <div className="admin-page__loading"><div className="spinner" /></div>
-                ) : pending.length === 0 ? (
-                    <div className="admin-page__empty">
-                        <p>No hay lugares pendientes de aprobación.</p>
-                    </div>
                 ) : (
-                    <div className="admin-page__list">
-                        {pending.map(place => (
-                            <PendingPlaceCard
-                                key={place.id}
-                                place={place}
-                                onApprove={handleApprove}
-                                onReject={handleReject}
-                            />
-                        ))}
+                    <div className="admin-page__grid">
+                        <section className="admin-section">
+                            <div className="admin-section__header">
+                                <h2>Usuarios</h2>
+                                <span>{users.length} registrado{users.length !== 1 ? "s" : ""}</span>
+                            </div>
+                            <div className="admin-users">
+                                {users.map(item => (
+                                    <div key={item.id} className="admin-user">
+                                        <img src={`/assets/${item.avatar || "avatar1.png"}`} alt={item.name} />
+                                        <div className="admin-user__body">
+                                            <strong>{item.name}</strong>
+                                            <span>{item.email}</span>
+                                        </div>
+                                        <select className="input admin-user__role" value={item.role} onChange={e => handleRoleChange(item.id, e.target.value)}>
+                                            {Object.entries(ROLE_LABELS).map(([value, label]) => (
+                                                <option key={value} value={value}>{label}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+
+                        <section className="admin-section">
+                            <div className="admin-section__header">
+                                <h2>Pendientes</h2>
+                                <span>{pending.length} por revisar</span>
+                            </div>
+                            {pending.length === 0 ? (
+                                <div className="admin-page__empty">
+                                    <p>No hay lugares pendientes de aprobación.</p>
+                                </div>
+                            ) : (
+                                <div className="admin-page__list">
+                                    {pending.map(place => (
+                                        <PendingPlaceCard
+                                            key={place.id}
+                                            place={place}
+                                            onApprove={handleApprove}
+                                            onReject={handleReject}
+                                        />
+                                    ))}
+                                </div>
+                            )}
+                        </section>
                     </div>
                 )}
             </div>
@@ -99,9 +151,22 @@ export default function AdminDashboard() {
                 .admin-page__header { margin-bottom: 32px; }
                 .admin-page__header h1 { font-size: var(--font-size-2xl); font-weight: 800; color: var(--color-text); margin-bottom: 6px; }
                 .admin-page__header p { font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: 12px; }
-                .admin-page__count { display: inline-block; background: #FEF3C7; color: #92400E; padding: 4px 12px; border-radius: var(--radius-full); font-size: var(--font-size-sm); font-weight: 700; }
-                .admin-page__loading, .admin-page__empty { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 80px 0; color: var(--color-text-muted); }
+                .admin-page__loading, .admin-page__empty { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 40px 0; color: var(--color-text-muted); }
+                .admin-page__grid { display: grid; grid-template-columns: minmax(280px, 420px) 1fr; gap: 24px; align-items: start; }
+                .admin-section { background: var(--color-white); border-radius: var(--radius-xl); box-shadow: var(--shadow); padding: 20px; }
+                .admin-section__header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+                .admin-section__header h2 { font-size: var(--font-size-lg); font-weight: 800; color: var(--color-text); }
+                .admin-section__header span { font-size: var(--font-size-xs); color: var(--color-text-muted); font-weight: 700; }
+                .admin-users { display: flex; flex-direction: column; gap: 10px; }
+                .admin-user { display: grid; grid-template-columns: 42px 1fr 170px; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--color-border); border-radius: var(--radius); }
+                .admin-user img { width: 42px; height: 42px; border-radius: var(--radius-full); object-fit: cover; }
+                .admin-user__body { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+                .admin-user__body strong { font-size: var(--font-size-sm); color: var(--color-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+                .admin-user__body span { font-size: var(--font-size-xs); color: var(--color-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+                .admin-user__role { min-width: 0; }
                 .admin-page__list { display: flex; flex-direction: column; gap: 16px; }
+                @media (max-width: 1000px) { .admin-page__grid { grid-template-columns: 1fr; } }
+                @media (max-width: 640px) { .admin-user { grid-template-columns: 42px 1fr; } .admin-user__role { grid-column: 1 / -1; } }
             `}</style>
         </div>
     );
