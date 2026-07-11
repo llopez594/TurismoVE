@@ -1,4 +1,5 @@
 import { Op } from "sequelize";
+import bcrypt from "bcryptjs";
 import { Place, Category, User } from "../../models/index.js";
 import { clearCache } from "../../middlewares/cache.middleware.js";
 
@@ -195,6 +196,12 @@ export async function updateUserRole(req, res) {
             });
         }
 
+        if (user.email === "admin@turismove.com") {
+            return res.status(400).json({
+                message: "La cuenta administradora principal no puede cambiar de rol."
+            });
+        }
+
         await user.update({ role });
 
         return res.status(200).json({
@@ -210,6 +217,51 @@ export async function updateUserRole(req, res) {
     } catch (error) {
         return res.status(500).json({
             message: "Error al actualizar el rol.",
+            error: error.message
+        });
+    }
+}
+
+export async function resetUserPassword(req, res) {
+    const id = Number(req.params.id);
+    const { password } = req.body;
+
+    if (id === req.user.id) {
+        return res.status(400).json({
+            message: "No puedes resetear tu propia contraseña desde este panel."
+        });
+    }
+
+    if (!password || password.length < 6) {
+        return res.status(400).json({
+            message: "La contraseña debe tener al menos 6 caracteres."
+        });
+    }
+
+    try {
+        const user = await User.findByPk(id);
+        if (!user) {
+            return res.status(404).json({
+                message: "Usuario no encontrado."
+            });
+        }
+
+        if (user.email === "admin@turismove.com") {
+            return res.status(400).json({
+                message: "La cuenta administradora principal no puede ser reseteada desde este panel."
+            });
+        }
+
+        await user.update({
+            passwordHash: bcrypt.hashSync(password, 10)
+        });
+
+        return res.status(200).json({
+            message: "Contraseña reseteada correctamente."
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error al resetear la contraseña.",
             error: error.message
         });
     }

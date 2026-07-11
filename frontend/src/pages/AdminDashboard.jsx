@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { RotateCcw, X } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import api, { unwrapResponse } from "../services/api";
 import PendingPlaceCard from "../components/admin/PendingPlaceCard";
+
+const ROOT_ADMIN_EMAIL = "admin@turismove.com";
 
 const ROLE_LABELS = {
     user: "Usuario",
@@ -11,13 +14,17 @@ const ROLE_LABELS = {
 };
 
 export default function AdminDashboard() {
-    const { isAuthenticated, isAdmin, loading: authLoading } = useAuth();
+    const { user, isAuthenticated, isAdmin, loading: authLoading } = useAuth();
     const navigate = useNavigate();
     const [pending, setPending] = useState([]);
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [toast, setToast] = useState("");
     const [userSearch, setUserSearch] = useState("");
+    const [passwordTarget, setPasswordTarget] = useState(null);
+    const [newPassword, setNewPassword] = useState("");
+    const [passwordLoading, setPasswordLoading] = useState(false);
+    const [passwordError, setPasswordError] = useState("");
 
     useEffect(() => {
         if (authLoading) return;
@@ -84,6 +91,38 @@ export default function AdminDashboard() {
         }
     }
 
+    function openPasswordModal(item) {
+        setPasswordTarget(item);
+        setNewPassword("");
+        setPasswordError("");
+    }
+
+    function closePasswordModal() {
+        setPasswordTarget(null);
+        setNewPassword("");
+        setPasswordError("");
+    }
+
+    async function handlePasswordReset(e) {
+        e.preventDefault();
+        if (!newPassword || newPassword.length < 6) {
+            setPasswordError("La contraseña debe tener al menos 6 caracteres.");
+            return;
+        }
+
+        setPasswordLoading(true);
+        setPasswordError("");
+        try {
+            await api.patch(`/admin/users/${passwordTarget.id}/password`, { password: newPassword });
+            showToast("Contraseña reseteada correctamente.");
+            closePasswordModal();
+        } catch (err) {
+            setPasswordError(err.response?.data?.message || "Error al resetear la contraseña.");
+        } finally {
+            setPasswordLoading(false);
+        }
+    }
+
     const filteredUsers = users.filter(item => {
         const text = `${item.name} ${item.email}`.toLowerCase();
         return text.includes(userSearch.trim().toLowerCase());
@@ -132,20 +171,40 @@ export default function AdminDashboard() {
                                 onChange={e => setUserSearch(e.target.value)}
                             />
                             <div className="admin-users">
-                                {filteredUsers.map(item => (
-                                    <div key={item.id} className="admin-user">
-                                        <img src={`/assets/${item.avatar || "avatar1.png"}`} alt={item.name} />
-                                        <div className="admin-user__body">
-                                            <strong>{item.name}</strong>
-                                            <span>{item.email}</span>
+                                {filteredUsers.map(item => {
+                                    const isRootAdmin = item.email === ROOT_ADMIN_EMAIL;
+
+                                    return (
+                                        <div key={item.id} className="admin-user">
+                                            <img src={`/assets/${item.avatar || "avatar1.png"}`} alt={item.name} />
+                                            <div className="admin-user__body">
+                                                <strong>{item.name}</strong>
+                                                <span>{item.email}</span>
+                                            </div>
+                                            {isRootAdmin ? (
+                                                <span className="admin-user__protected-role">Administrador</span>
+                                            ) : (
+                                                <div className="admin-user__controls">
+                                                    {item.id !== user?.id && (
+                                                        <button
+                                                            className="admin-user__reset-btn"
+                                                            type="button"
+                                                            title="Resetear la contraseña"
+                                                            onClick={() => openPasswordModal(item)}
+                                                        >
+                                                            <RotateCcw size={16} />
+                                                        </button>
+                                                    )}
+                                                    <select className="input admin-user__role" value={item.role} onChange={e => handleRoleChange(item.id, e.target.value)}>
+                                                        {Object.entries(ROLE_LABELS).map(([value, label]) => (
+                                                            <option key={value} value={value}>{label}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                            )}
                                         </div>
-                                        <select className="input admin-user__role" value={item.role} onChange={e => handleRoleChange(item.id, e.target.value)}>
-                                            {Object.entries(ROLE_LABELS).map(([value, label]) => (
-                                                <option key={value} value={value}>{label}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                                 {filteredUsers.length === 0 && (
                                     <div className="admin-page__empty">
                                         <p>No hay usuarios que coincidan con la búsqueda.</p>
@@ -156,6 +215,41 @@ export default function AdminDashboard() {
                     </div>
                 )}
             </div>
+
+            {passwordTarget && (
+                <div className="modal-overlay" onClick={e => { if (e.target === e.currentTarget) closePasswordModal(); }}>
+                    <div className="modal-card admin-password-modal">
+                        <button className="admin-password-modal__close" type="button" onClick={closePasswordModal} disabled={passwordLoading}>
+                            <X size={20} />
+                        </button>
+                        <h2 className="admin-password-modal__title">Resetear contraseña</h2>
+                        <p className="admin-password-modal__subtitle">
+                            Nueva contraseña para <strong>{passwordTarget.name}</strong>.
+                        </p>
+                        <form className="admin-password-modal__form" onSubmit={handlePasswordReset}>
+                            <div className="admin-password-modal__group">
+                                <label>Nueva contraseña</label>
+                                <input
+                                    className="input"
+                                    type="password"
+                                    value={newPassword}
+                                    onChange={e => setNewPassword(e.target.value)}
+                                    placeholder="Mínimo 6 caracteres"
+                                    disabled={passwordLoading}
+                                    autoFocus
+                                />
+                            </div>
+                            {passwordError && <p className="admin-password-modal__error">{passwordError}</p>}
+                            <div className="admin-password-modal__actions">
+                                <button type="button" className="btn btn-outline" onClick={closePasswordModal} disabled={passwordLoading}>Cancelar</button>
+                                <button type="submit" className="btn btn-primary" disabled={passwordLoading}>
+                                    {passwordLoading ? "Guardando..." : "Guardar contraseña"}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
 
             {toast && <div className="toast">✓ {toast}</div>}
 
@@ -172,14 +266,27 @@ export default function AdminDashboard() {
                 .admin-section__header span { font-size: var(--font-size-xs); color: var(--color-text-muted); font-weight: 700; }
                 .admin-users__search { margin-bottom: 14px; }
                 .admin-users { display: flex; flex-direction: column; gap: 10px; }
-                .admin-user { display: grid; grid-template-columns: 42px 1fr 190px; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--color-border); border-radius: var(--radius); }
+                .admin-user { display: grid; grid-template-columns: 42px 1fr 236px; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--color-border); border-radius: var(--radius); }
                 .admin-user img { width: 42px; height: 42px; border-radius: var(--radius-full); object-fit: cover; }
                 .admin-user__body { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
                 .admin-user__body strong { font-size: var(--font-size-sm); color: var(--color-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
                 .admin-user__body span { font-size: var(--font-size-xs); color: var(--color-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+                .admin-user__controls { display: grid; grid-template-columns: 34px 1fr; gap: 8px; align-items: center; }
+                .admin-user__protected-role { justify-self: end; display: inline-flex; align-items: center; justify-content: center; min-height: 34px; padding: 0 14px; border-radius: var(--radius); background: var(--color-bg-input); color: var(--color-text-muted); font-size: var(--font-size-sm); font-weight: 700; }
+                .admin-user__reset-btn { width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; color: var(--color-text-muted); background: var(--color-white); border: 1px solid var(--color-border); border-radius: var(--radius); cursor: pointer; transition: all var(--transition); }
+                .admin-user__reset-btn:hover { color: var(--color-primary); border-color: var(--color-primary); background: #F0FAFA; }
                 .admin-user__role { min-width: 0; }
                 .admin-page__list { display: flex; flex-direction: column; gap: 16px; }
-                @media (max-width: 640px) { .admin-user { grid-template-columns: 42px 1fr; } .admin-user__role { grid-column: 1 / -1; } }
+                .admin-password-modal { max-width: 440px; position: relative; }
+                .admin-password-modal__close { position: absolute; top: 16px; right: 16px; background: none; border: none; color: var(--color-text-muted); cursor: pointer; }
+                .admin-password-modal__title { font-size: var(--font-size-xl); font-weight: 800; color: var(--color-text); margin-bottom: 6px; }
+                .admin-password-modal__subtitle { font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: 20px; }
+                .admin-password-modal__form { display: flex; flex-direction: column; gap: 16px; }
+                .admin-password-modal__group { display: flex; flex-direction: column; gap: 6px; }
+                .admin-password-modal__group label { font-size: var(--font-size-sm); font-weight: 600; color: var(--color-text); }
+                .admin-password-modal__error { background: #FEE2E2; color: #991B1B; padding: 10px 14px; border-radius: var(--radius-sm); font-size: var(--font-size-sm); }
+                .admin-password-modal__actions { display: flex; justify-content: flex-end; gap: 12px; }
+                @media (max-width: 640px) { .admin-user { grid-template-columns: 42px 1fr; } .admin-user__controls, .admin-user__protected-role { grid-column: 1 / -1; justify-self: stretch; } }
             `}</style>
         </div>
     );

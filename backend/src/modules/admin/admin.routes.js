@@ -7,6 +7,7 @@ import {
     getPendingPlaces,
     getUsers,
     rejectPlace,
+    resetUserPassword,
     updateUserRole
 } from "./admin.controller.js";
 
@@ -18,5 +19,6 @@ router.patch("/places/:id/approve", authenticate, authorizeRoles("admin"), appro
 router.patch("/places/:id/reject", authenticate, authorizeRoles("admin"), rejectPlace);
 router.get("/users", authenticate, authorizeRoles("admin"), getUsers);
 router.patch("/users/:id/role", authenticate, authorizeRoles("admin"), updateUserRole);
+router.patch("/users/:id/password", authenticate, authorizeRoles("admin"), resetUserPassword);
 
 export default router;
