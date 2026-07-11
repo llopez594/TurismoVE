@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { Instagram, Twitter, Facebook } from "lucide-react";
 
 export default function Footer() {
     return (
@@ -20,14 +19,13 @@ export default function Footer() {
                 {/* Links */}
                 <div className="footer__col">
                     <h4 className="footer__heading">EXPLORAR</h4>
-                    <Link to="/buscar?categoria=Playas" className="footer__link">Playas</Link>
-                    <Link to="/buscar?categoria=Montañas" className="footer__link">Montañas</Link>
-                    <Link to="/buscar?categoria=Ciudades" className="footer__link">Ciudades</Link>
-                    <Link to="/buscar?categoria=Aventura" className="footer__link">Aventura</Link>
-                    <Link to="/buscar?categoria=Cultura" className="footer__link">Cultura</Link>
-                    <Link to="/buscar?categoria=Gastronomía" className="footer__link">Gastronomía</Link>
+                    <Link to="/buscar?categoria=1" className="footer__link">Playas</Link>
+                    <Link to="/buscar?categoria=2" className="footer__link">Montañas</Link>
+                    <Link to="/buscar?categoria=3" className="footer__link">Ciudades</Link>
+                    <Link to="/buscar?categoria=4" className="footer__link">Aventura</Link>
+                    <Link to="/buscar?categoria=5" className="footer__link">Cultura</Link>
+                    <Link to="/buscar?categoria=6" className="footer__link">Gastronomía</Link>
                 </div>
-                
             </div>
 
             <div className="footer__bottom">
