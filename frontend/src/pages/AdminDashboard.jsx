@@ -17,6 +17,7 @@ export default function AdminDashboard() {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [toast, setToast] = useState("");
+    const [userSearch, setUserSearch] = useState("");
 
     useEffect(() => {
         if (authLoading) return;
@@ -83,6 +84,11 @@ export default function AdminDashboard() {
         }
     }
 
+    const filteredUsers = users.filter(item => {
+        const text = `${item.name} ${item.email}`.toLowerCase();
+        return text.includes(userSearch.trim().toLowerCase());
+    });
+
     return (
         <div className="admin-page">
             <div className="container">
@@ -94,14 +100,39 @@ export default function AdminDashboard() {
                 {loading ? (
                     <div className="admin-page__loading"><div className="spinner" /></div>
                 ) : (
-                    <div className="admin-page__grid">
+                    <div className="admin-page__stack">
+                        {pending.length > 0 && (
+                            <section className="admin-section">
+                                <div className="admin-section__header">
+                                    <h2>Pendientes</h2>
+                                    <span>{pending.length} por revisar</span>
+                                </div>
+                                <div className="admin-page__list">
+                                    {pending.map(place => (
+                                        <PendingPlaceCard
+                                            key={place.id}
+                                            place={place}
+                                            onApprove={handleApprove}
+                                            onReject={handleReject}
+                                        />
+                                    ))}
+                                </div>
+                            </section>
+                        )}
+
                         <section className="admin-section">
                             <div className="admin-section__header">
                                 <h2>Usuarios</h2>
-                                <span>{users.length} registrado{users.length !== 1 ? "s" : ""}</span>
+                                <span>{filteredUsers.length} de {users.length}</span>
                             </div>
+                            <input
+                                className="input admin-users__search"
+                                placeholder="Buscar por nombre o correo..."
+                                value={userSearch}
+                                onChange={e => setUserSearch(e.target.value)}
+                            />
                             <div className="admin-users">
-                                {users.map(item => (
+                                {filteredUsers.map(item => (
                                     <div key={item.id} className="admin-user">
                                         <img src={`/assets/${item.avatar || "avatar1.png"}`} alt={item.name} />
                                         <div className="admin-user__body">
@@ -115,30 +146,12 @@ export default function AdminDashboard() {
                                         </select>
                                     </div>
                                 ))}
+                                {filteredUsers.length === 0 && (
+                                    <div className="admin-page__empty">
+                                        <p>No hay usuarios que coincidan con la búsqueda.</p>
+                                    </div>
+                                )}
                             </div>
-                        </section>
-
-                        <section className="admin-section">
-                            <div className="admin-section__header">
-                                <h2>Pendientes</h2>
-                                <span>{pending.length} por revisar</span>
-                            </div>
-                            {pending.length === 0 ? (
-                                <div className="admin-page__empty">
-                                    <p>No hay lugares pendientes de aprobación.</p>
-                                </div>
-                            ) : (
-                                <div className="admin-page__list">
-                                    {pending.map(place => (
-                                        <PendingPlaceCard
-                                            key={place.id}
-                                            place={place}
-                                            onApprove={handleApprove}
-                                            onReject={handleReject}
-                                        />
-                                    ))}
-                                </div>
-                            )}
                         </section>
                     </div>
                 )}
@@ -152,20 +165,20 @@ export default function AdminDashboard() {
                 .admin-page__header h1 { font-size: var(--font-size-2xl); font-weight: 800; color: var(--color-text); margin-bottom: 6px; }
                 .admin-page__header p { font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: 12px; }
                 .admin-page__loading, .admin-page__empty { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 40px 0; color: var(--color-text-muted); }
-                .admin-page__grid { display: grid; grid-template-columns: minmax(280px, 420px) 1fr; gap: 24px; align-items: start; }
+                .admin-page__stack { display: flex; flex-direction: column; gap: 24px; }
                 .admin-section { background: var(--color-white); border-radius: var(--radius-xl); box-shadow: var(--shadow); padding: 20px; }
                 .admin-section__header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
                 .admin-section__header h2 { font-size: var(--font-size-lg); font-weight: 800; color: var(--color-text); }
                 .admin-section__header span { font-size: var(--font-size-xs); color: var(--color-text-muted); font-weight: 700; }
+                .admin-users__search { margin-bottom: 14px; }
                 .admin-users { display: flex; flex-direction: column; gap: 10px; }
-                .admin-user { display: grid; grid-template-columns: 42px 1fr 170px; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--color-border); border-radius: var(--radius); }
+                .admin-user { display: grid; grid-template-columns: 42px 1fr 190px; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--color-border); border-radius: var(--radius); }
                 .admin-user img { width: 42px; height: 42px; border-radius: var(--radius-full); object-fit: cover; }
                 .admin-user__body { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
                 .admin-user__body strong { font-size: var(--font-size-sm); color: var(--color-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
                 .admin-user__body span { font-size: var(--font-size-xs); color: var(--color-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
                 .admin-user__role { min-width: 0; }
                 .admin-page__list { display: flex; flex-direction: column; gap: 16px; }
-                @media (max-width: 1000px) { .admin-page__grid { grid-template-columns: 1fr; } }
                 @media (max-width: 640px) { .admin-user { grid-template-columns: 42px 1fr; } .admin-user__role { grid-column: 1 / -1; } }
             `}</style>
         </div>

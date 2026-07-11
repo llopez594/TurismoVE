@@ -21,6 +21,7 @@ export default function PublishPlaceForm() {
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState("");
+    const [previewSrc, setPreviewSrc] = useState(DEFAULT_IMAGE);
 
     const [form, setForm] = useState({
         title: "", categoryId: "",
@@ -40,6 +41,10 @@ export default function PublishPlaceForm() {
     function handleChange(e) {
         setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
     }
+
+    useEffect(() => {
+        setPreviewSrc(form.coverImage.trim() || DEFAULT_IMAGE);
+    }, [form.coverImage]);
 
     function toggleService(s) {
         setForm(prev => ({
@@ -125,12 +130,14 @@ export default function PublishPlaceForm() {
                     <span className="publish-form__hint-label"> — Opcional. Si no colocas una, se usará una imagen por defecto.</span>
                 </label>
                 <input name="coverImage" className="input" placeholder="ej. https://ejemplo.com/imagen.jpg" value={form.coverImage} onChange={handleChange} />
-                {!form.coverImage.trim() && (
-                    <div className="publish-form__img-preview">
-                        <span>Vista previa por defecto:</span>
-                        <img src={DEFAULT_IMAGE} alt="Imagen por defecto" />
-                    </div>
-                )}
+                <div className="publish-form__img-preview">
+                    <span>{form.coverImage.trim() ? "Vista previa:" : "Vista previa por defecto:"}</span>
+                    <img
+                        src={previewSrc}
+                        alt="Vista previa de portada"
+                        onError={() => setPreviewSrc(DEFAULT_IMAGE)}
+                    />
+                </div>
             </div>
 
             <div className="publish-form__row">
@@ -185,7 +192,7 @@ export default function PublishPlaceForm() {
                 .publish-form__error { background: #FEE2E2; color: #991B1B; padding: 10px 14px; border-radius: var(--radius-sm); font-size: var(--font-size-sm); }
                 .publish-form__img-preview { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
                 .publish-form__img-preview span { font-size: var(--font-size-xs); color: var(--color-text-muted); }
-                .publish-form__img-preview img { width: 100%; max-height: 140px; object-fit: cover; border-radius: var(--radius); border: 1px solid var(--color-border); }
+                .publish-form__img-preview img { width: 100%; height: 260px; object-fit: cover; border-radius: var(--radius); border: 1px solid var(--color-border); }
                 .publish-success { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 48px 24px; text-align: center; }
                 .publish-success h3 { font-size: var(--font-size-xl); font-weight: 700; color: var(--color-text); }
                 .publish-success p { color: var(--color-text-muted); }
