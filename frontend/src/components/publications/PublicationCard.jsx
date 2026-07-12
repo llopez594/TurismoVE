@@ -3,13 +3,11 @@ import { MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 
 const DEFAULT_IMAGES = {
-    lugar:     "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800&auto=format&fit=crop",
-    actividad: "https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=800&auto=format&fit=crop"
+    lugar: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800&auto=format&fit=crop"
 };
 
-export default function PublicationCard({ publication, onEdit }) {
+export default function PublicationCard({ publication, onEdit, showAuthor = false }) {
     const [menuOpen, setMenuOpen] = useState(false);
-    const isExperience = publication.type === "actividad";
     const status = publication.status || "pending";
     const fallback = DEFAULT_IMAGES[publication.type] || DEFAULT_IMAGES.lugar;
     const image = publication.coverImage || publication.cover_image || null;
@@ -38,15 +36,12 @@ export default function PublicationCard({ publication, onEdit }) {
             <div className="pub-card__body">
                 <div className="pub-card__badges">
                     <span className={`badge ${className}`}>● {label}</span>
-                    <span className={`badge ${isExperience ? "badge-exp" : "badge-place"}`}>
-                        {isExperience ? "EXPERIENCIA" : "LUGAR"}
-                    </span>
+                    <span className="badge badge-place">LUGAR</span>
                 </div>
                 <h4 className="pub-card__title">{publication.title}</h4>
-                {publication.cost && (
-                    <p className="pub-card__price">
-                        ${Number(publication.cost).toFixed(0)} USD
-                        <span> / {isExperience ? "persona" : "noche"}</span>
+                {showAuthor && (
+                    <p className="pub-card__author">
+                        Creado por: {publication.createdByLabel || publication.author?.name || "system"}
                     </p>
                 )}
             </div>
@@ -72,8 +67,7 @@ export default function PublicationCard({ publication, onEdit }) {
                 .pub-card__body { flex: 1; min-width: 0; }
                 .pub-card__badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
                 .pub-card__title { font-size: var(--font-size-base); font-weight: 700; color: var(--color-text); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-                .pub-card__price { font-size: var(--font-size-sm); color: var(--color-text-muted); }
-                .pub-card__price span { font-size: var(--font-size-xs); }
+                .pub-card__author { font-size: var(--font-size-xs); color: var(--color-text-muted); }
                 .pub-card__actions { position: relative; flex-shrink: 0; }
                 .pub-card__menu-btn { background: none; border: none; color: var(--color-text-muted); cursor: pointer; padding: 4px; border-radius: var(--radius-sm); }
                 .pub-card__menu-btn:hover { background: var(--color-bg-input); }

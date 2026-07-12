@@ -2,8 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { MapPin, Star, Wifi, Zap, Droplets } from "lucide-react";
 
 const DEFAULT_IMAGES = {
-    lugar:     "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800&auto=format&fit=crop",
-    actividad: "https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=800&auto=format&fit=crop"
+    lugar: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800&auto=format&fit=crop"
 };
 
 const SERVICE_ICONS = {
@@ -19,8 +18,6 @@ export default function PlaceListItem({ place }) {
     const image = place.coverImage || place.cover_image || DEFAULT_IMAGES[place.type] || DEFAULT_IMAGES.lugar;
     const fallback = DEFAULT_IMAGES[place.type] || DEFAULT_IMAGES.lugar;
     const rating = parseFloat(place.ratingAverage || place.rating_average || 0);
-    const cost = place.cost ? `$${Number(place.cost).toFixed(0)}` : null;
-    const isExperience = place.type === "actividad";
     
     let services = [];
     if (place.services) {
@@ -57,8 +54,8 @@ export default function PlaceListItem({ place }) {
                 <h3 className="list-item__title">{place.title}</h3>
                 <p className="list-item__location"><MapPin size={13} /> {place.location}</p>
                 {category && (
-                    <span className={`badge ${isExperience ? "badge-exp" : "badge-place"}`}>
-                        {isExperience ? "EXPERIENCIA" : category.toUpperCase()}
+                    <span className="badge badge-place">
+                        {category.toUpperCase()}
                     </span>
                 )}
                 {services.length > 0 && (
@@ -76,11 +73,6 @@ export default function PlaceListItem({ place }) {
             </div>
 
             <div className="list-item__right">
-                {cost && (
-                    <div className="list-item__price">
-                        {cost} <span>/{isExperience ? "persona" : "noche"}</span>
-                    </div>
-                )}
                 <button className="btn btn-primary" style={{ padding: "8px 18px" }}>
                     Ver Detalles
                 </button>
@@ -99,8 +91,6 @@ export default function PlaceListItem({ place }) {
                 .list-item__services { display: flex; gap: 8px; flex-wrap: wrap; }
                 .list-item__service { display: flex; align-items: center; gap: 4px; font-size: .75rem; color: var(--color-text-muted); background: var(--color-bg-input); padding: 2px 8px; border-radius: var(--radius-full); }
                 .list-item__right { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; flex-shrink: 0; }
-                .list-item__price { font-size: var(--font-size-xl); font-weight: 800; color: var(--color-text); text-align: right; }
-                .list-item__price span { font-size: var(--font-size-sm); font-weight: 400; color: var(--color-text-muted); }
                 @media (max-width: 600px) { .list-item { flex-wrap: wrap; } .list-item__image { width: 100%; height: 180px; } .list-item__right { width: 100%; flex-direction: row; justify-content: space-between; align-items: center; } }
             `}</style>
         </div>

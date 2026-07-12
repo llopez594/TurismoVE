@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { MapPin, Star, Clock, DollarSign, Wifi, Zap, Droplets, ArrowLeft, Send } from "lucide-react";
+import { MapPin, Star, Clock, Wifi, Zap, Droplets, ArrowLeft, Send } from "lucide-react";
 import api, { unwrapResponse } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
 const DEFAULT_IMAGES = {
-    lugar:     "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800&auto=format&fit=crop",
-    actividad: "https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=800&auto=format&fit=crop"
+    lugar: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800&auto=format&fit=crop"
 };
 
 const SERVICE_ICONS = {
@@ -161,8 +160,6 @@ export default function PlaceDetail() {
         }
     }
 
-    const isExperience = place.type === "actividad";
-
     return (
         <div className="detail-page">
             <div className="container">
@@ -176,8 +173,8 @@ export default function PlaceDetail() {
                         alt={place.title}
                         onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = DEFAULT_IMAGES[place.type] || DEFAULT_IMAGES.lugar; }}
                     />
-                    <span className={`badge ${isExperience ? "badge-exp" : "badge-place"} detail-page__type`}>
-                        {isExperience ? "EXPERIENCIA" : "LUGAR"}
+                    <span className="badge badge-place detail-page__type">
+                        LUGAR
                     </span>
                 </div>
 
@@ -324,13 +321,6 @@ export default function PlaceDetail() {
 
                     <div className="detail-page__sidebar">
                         <div className="card detail-page__book-card">
-                            {place.cost && (
-                                <div className="detail-page__price">
-                                    <DollarSign size={18} />
-                                    <span>${Number(place.cost).toFixed(0)}</span>
-                                    <small>/{isExperience ? "persona" : "noche"}</small>
-                                </div>
-                            )}
                             {(place.checkIn || place.checkOut) && (
                                 <div className="detail-page__schedule">
                                     {place.checkIn && <span><Clock size={14} /> Horario apertura: {place.checkIn}</span>}
@@ -366,9 +356,6 @@ export default function PlaceDetail() {
                 .detail-page__reviews-section { display: flex; flex-direction: column; gap: 16px; }
                 .detail-page__reviews-coming { font-size: var(--font-size-sm); color: var(--color-text-muted); font-style: italic; }
                 .detail-page__book-card { padding: 24px; display: flex; flex-direction: column; gap: 16px; position: sticky; top: 80px; }
-                .detail-page__price { display: flex; align-items: baseline; gap: 4px; color: var(--color-text); }
-                .detail-page__price span { font-size: var(--font-size-3xl); font-weight: 800; }
-                .detail-page__price small { font-size: var(--font-size-sm); color: var(--color-text-muted); }
                 .detail-page__schedule { display: flex; flex-direction: column; gap: 8px; font-size: var(--font-size-sm); color: var(--color-text-muted); }
                 .detail-page__schedule span { display: flex; align-items: center; gap: 6px; }
 

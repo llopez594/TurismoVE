@@ -3,13 +3,14 @@ import { PlusCircle, BookOpen } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
 export default function HostCTA() {
-     const {isAuthenticated} = useAuth();
+     const { isAuthenticated, isAdmin, isContentCreator } = useAuth();
     const navigate = useNavigate();
+    const canPublish = isAdmin || isContentCreator;
 
     return (
     
         <section>
-        {isAuthenticated &&(
+        {isAuthenticated && canPublish && (
             <div className="host-cta">
               <div className="container host-cta__inner">
                  <div className="host-cta__text">

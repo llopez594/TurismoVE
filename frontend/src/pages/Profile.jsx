@@ -6,7 +6,7 @@ import AvatarUpdate from "../components/profile/AvatarUpdate";
 import ChangePasswordForm from "../components/profile/ChangePasswordForm";
 
 export default function Profile() {
-    const { user, isAuthenticated, isAdmin, loading: authLoading } = useAuth();
+    const { user, isAuthenticated, isAdmin, isContentCreator, loading: authLoading } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -28,28 +28,18 @@ export default function Profile() {
                     <h3 className="user-sidebar__name">{user?.name}</h3>
                     <p className="user-sidebar__email">{user?.email}</p>
                     <nav className="user-sidebar__nav">
-                    {isAuthenticated && (
-                        isAdmin ? (
-                        <>
-                            <Link to="/perfil" className="user-sidebar__link user-sidebar__link--active">Configuración de Perfil</Link>
-                            <Link to="/mis-publicaciones" className="user-sidebar__link">Publicaciones </Link>
-                        </>
-                        ) : (
-                        <>
-                            <Link to="/perfil" className="user-sidebar__link user-sidebar__link--active">Configuración de Perfil</Link>
-                            <Link to="/mis-publicaciones" className="user-sidebar__link">Mis Publicaciones </Link>
-                            <Link to="/publicar" className="user-sidebar__link">Publicar Lugar / Experiencia </Link>
-                        </>
-                    )
-
-                    )}
+                        <Link to="/perfil" className="user-sidebar__link user-sidebar__link--active">Configuración de Perfil</Link>
+                        {isAdmin && <Link to="/mis-publicaciones" className="user-sidebar__link">Publicaciones</Link>}
+                        {isAdmin && <Link to="/admin" className="user-sidebar__link">Usuarios</Link>}
+                        {isContentCreator && <Link to="/mis-publicaciones" className="user-sidebar__link">Mis Publicaciones</Link>}
+                        {isContentCreator && <Link to="/publicar" className="user-sidebar__link">Publicar Lugar</Link>}
                     </nav>
                 </aside>
 
                 <main className="profile-page__main">
                     <div className="profile-page__header">
-                        <h1>Configuracion de Perfil</h1>
-                        <p>Gestiona tu información personal. </p>
+                        <h1>Configuración de Perfil</h1>
+                        <p>Gestiona tu información personal.</p>
                     </div>
 
                     <div className="profile-page__sections">

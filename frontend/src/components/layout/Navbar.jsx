@@ -4,7 +4,7 @@ import { Menu, X, Bell, LogOut, User, MapPin, BookOpen, PlusCircle, Shield } fro
 import { useAuth } from "../../context/AuthContext";
 
 export default function Navbar({ onLoginClick, onRegisterClick }) {
-    const { user, isAuthenticated, isAdmin, logout } = useAuth();
+    const { user, isAuthenticated, isAdmin, isContentCreator, logout } = useAuth();
     const [menuOpen, setMenuOpen] = useState(false);
     const navigate = useNavigate();
 
@@ -23,7 +23,7 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
                         <span>TurismoVE <strong>Explorer</strong></span>
                     </Link>
                 ) : (
-                   <Link to="/admin" className="navbar__logo">
+                   <Link to={isAdmin ? "/admin" : "/"} className="navbar__logo">
                         <img src="/assets/icon.png" alt="TurismoVE" width={32} height={32} />
                         <span>TurismoVE <strong>Explorer</strong></span>
                     </Link>
@@ -44,8 +44,11 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
                                 <Link to="/mis-publicaciones" className="navbar__link">
                                     Publicaciones
                                 </Link>
+                                <Link to="/admin" className="navbar__link navbar__link--admin">
+                                    Usuarios
+                                </Link>
                             </>
-                        ) : (
+                        ) : isContentCreator ? (
                             <>
                                 <Link to="/buscar" className="navbar__link">Explorar</Link>
                                 <Link to="/mis-publicaciones" className="navbar__link">
@@ -56,6 +59,8 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
                                     Publicar
                                 </Link>
                             </>
+                        ) : (
+                            <Link to="/buscar" className="navbar__link">Explorar</Link>
                         )
                     )}
                 </nav>
@@ -131,7 +136,7 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
                                 <Shield size={18} /> Panel Admin
                             </Link>
                         </>
-                        ) : (
+                        ) : isContentCreator ? (
                             <>
                                 <Link to="/buscar" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
                                     <MapPin size={18} /> Explorar
@@ -143,6 +148,10 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
                                     <PlusCircle size={18} /> Publicar
                                 </Link>
                             </>
+                        ) : (
+                            <Link to="/buscar" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
+                                <MapPin size={18} /> Explorar
+                            </Link>
                         )
    
                     )}

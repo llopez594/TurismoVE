@@ -3637,6 +3637,7 @@ module.exports = {
                     rating_average: place.rating_average,
                     category_id: place.category_id,
                     user_id: user.id,
+                    created_by_label: "system",
                     created_at: now,
                     updated_at: now,
                     cost: place.cost,

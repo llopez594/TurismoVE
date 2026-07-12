@@ -12,24 +12,21 @@ const SERVICES_OPTIONS = [
     "Cocina Equipada",
 ];
 
-// Imágenes por defecto según tipo de publicación
-const DEFAULT_IMAGES = {
-    lugar:    "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800&auto=format&fit=crop",
-    actividad: "https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=800&auto=format&fit=crop"
-};
+const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800&auto=format&fit=crop";
 
-export default function PublishPlaceForm({ type = "lugar" }) {
+export default function PublishPlaceForm() {
     const { isAuthenticated } = useAuth();
     const navigate = useNavigate();
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState("");
+    const [previewSrc, setPreviewSrc] = useState(DEFAULT_IMAGE);
 
     const [form, setForm] = useState({
-        title: "", categoryId: "", cost: "",
-        location: "", address: "", checkIn: "14:00",
-        checkOut: "11:00", services: [], description: "",
+        title: "", categoryId: "",
+        location: "", address: "", checkIn: "08:00",
+        checkOut: "18:00", services: [], description: "",
         coverImage: ""
     });
 
@@ -39,11 +36,15 @@ export default function PublishPlaceForm({ type = "lugar" }) {
             const data = unwrapResponse(res.data);
             setCategories(data.data || []);
         });
-    }, [isAuthenticated]);
+    }, [isAuthenticated, navigate]);
 
     function handleChange(e) {
         setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
     }
+
+    useEffect(() => {
+        setPreviewSrc(form.coverImage.trim() || DEFAULT_IMAGE);
+    }, [form.coverImage]);
 
     function toggleService(s) {
         setForm(prev => ({
@@ -60,11 +61,9 @@ export default function PublishPlaceForm({ type = "lugar" }) {
             setError("Título, categoría, ubicación y descripción son obligatorios.");
             return;
         }
-        if (!form.cost || Number(form.cost) <= 0) {
-            setError("El costo es obligatorio y debe ser mayor a 0.");
-            return;
-        }
-        setError(""); setLoading(true);
+
+        setError("");
+        setLoading(true);
         try {
             await api.post("/places", {
                 title: form.title,
@@ -72,15 +71,14 @@ export default function PublishPlaceForm({ type = "lugar" }) {
                 location: form.location,
                 address: form.address || null,
                 categoryId: Number(form.categoryId),
-                type,
-                cost: Number(form.cost),
+                type: "lugar",
                 checkIn: form.checkIn || null,
                 checkOut: form.checkOut || null,
                 services: form.services.length > 0 ? form.services : null,
-                coverImage: form.coverImage.trim() || DEFAULT_IMAGES[type]
+                coverImage: form.coverImage.trim() || DEFAULT_IMAGE
             });
             setSuccess(true);
-            setForm({ title: "", categoryId: "", cost: "", location: "", address: "", checkIn: "14:00", checkOut: "11:00", services: [], description: "", coverImage: "" });
+            setForm({ title: "", categoryId: "", location: "", address: "", checkIn: "08:00", checkOut: "18:00", services: [], description: "", coverImage: "" });
         } catch (err) {
             setError(err.response?.data?.message || "Error al publicar. Intenta de nuevo.");
         } finally {
@@ -90,7 +88,7 @@ export default function PublishPlaceForm({ type = "lugar" }) {
 
     if (success) return (
         <div className="publish-success">
-            <h3>¡{type === "lugar" ? "Lugar" : "Experiencia"} enviado correctamente!</h3>
+            <h3>¡Lugar enviado correctamente!</h3>
             <p>Queda pendiente de aprobación por el administrador.</p>
             <div style={{ display: "flex", gap: "12px", marginTop: "8px" }}>
                 <button className="btn btn-primary" onClick={() => setSuccess(false)}>Publicar otro</button>
@@ -101,13 +99,11 @@ export default function PublishPlaceForm({ type = "lugar" }) {
 
     return (
         <form className="publish-form" onSubmit={handleSubmit}>
-            <h3 className="publish-form__subtitle">
-                {type === "lugar" ? "Nuevo Lugar Turístico" : "Nueva Experiencia"}
-            </h3>
+            <h3 className="publish-form__subtitle">Nuevo Lugar Turístico</h3>
 
             <div className="publish-form__group">
-                <label>Nombre del {type === "lugar" ? "Lugar" : "Experiencia"} / Título <span className="publish-form__required">*</span></label>
-                <input name="title" className="input" placeholder="ej. Cabaña de Piedra Mucuchies" value={form.title} onChange={handleChange} />
+                <label>Nombre del Lugar / Título <span className="publish-form__required">*</span></label>
+                <input name="title" className="input" placeholder="ej. Laguna de Mucubají" value={form.title} onChange={handleChange} />
             </div>
 
             <div className="publish-form__row">
@@ -119,20 +115,14 @@ export default function PublishPlaceForm({ type = "lugar" }) {
                     </select>
                 </div>
                 <div className="publish-form__group">
-                    <label>Costo por {type === "lugar" ? "Noche" : "Persona"} (USD) <span className="publish-form__required">*</span></label>
-                    <input name="cost" type="number" min="0.01" step="0.01" className="input" placeholder="ej. 85" value={form.cost} onChange={handleChange} />
-                </div>
-            </div>
-
-            <div className="publish-form__row">
-                <div className="publish-form__group">
                     <label>Ubicación General (Estado / Ciudad) <span className="publish-form__required">*</span></label>
                     <input name="location" className="input" placeholder="ej. Mérida, Venezuela" value={form.location} onChange={handleChange} />
                 </div>
-                <div className="publish-form__group">
-                    <label>Dirección Detallada</label>
-                    <input name="address" className="input" placeholder="ej. Sector Mucuchies, Km 45" value={form.address} onChange={handleChange} />
-                </div>
+            </div>
+
+            <div className="publish-form__group">
+                <label>Dirección Detallada</label>
+                <input name="address" className="input" placeholder="ej. Sector Mucuchíes, Km 45" value={form.address} onChange={handleChange} />
             </div>
 
             <div className="publish-form__group">
@@ -140,26 +130,26 @@ export default function PublishPlaceForm({ type = "lugar" }) {
                     <span className="publish-form__hint-label"> — Opcional. Si no colocas una, se usará una imagen por defecto.</span>
                 </label>
                 <input name="coverImage" className="input" placeholder="ej. https://ejemplo.com/imagen.jpg" value={form.coverImage} onChange={handleChange} />
-                {!form.coverImage.trim() && (
-                    <div className="publish-form__img-preview">
-                        <span>Vista previa por defecto:</span>
-                        <img src={DEFAULT_IMAGES[type]} alt="Imagen por defecto" />
-                    </div>
-                )}
+                <div className="publish-form__img-preview">
+                    <span>{form.coverImage.trim() ? "Vista previa:" : "Vista previa por defecto:"}</span>
+                    <img
+                        src={previewSrc}
+                        alt="Vista previa de portada"
+                        onError={() => setPreviewSrc(DEFAULT_IMAGE)}
+                    />
+                </div>
             </div>
 
-            {type === "lugar" && (
-                <div className="publish-form__row">
-                    <div className="publish-form__group">
-                        <label>Horario Entrada (Check-in)</label>
-                        <input name="checkIn" className="input" value={form.checkIn} onChange={handleChange} />
-                    </div>
-                    <div className="publish-form__group">
-                        <label>Horario Salida (Check-out)</label>
-                        <input name="checkOut" className="input" value={form.checkOut} onChange={handleChange} />
-                    </div>
+            <div className="publish-form__row">
+                <div className="publish-form__group">
+                    <label>Horario apertura</label>
+                    <input name="checkIn" className="input" value={form.checkIn} onChange={handleChange} />
                 </div>
-            )}
+                <div className="publish-form__group">
+                    <label>Horario de cierre</label>
+                    <input name="checkOut" className="input" value={form.checkOut} onChange={handleChange} />
+                </div>
+            </div>
 
             <div className="publish-form__group">
                 <label>Servicios Incluidos</label>
@@ -179,13 +169,13 @@ export default function PublishPlaceForm({ type = "lugar" }) {
 
             <div className="publish-form__group">
                 <label>Descripción Completa <span className="publish-form__required">*</span></label>
-                <textarea name="description" className="input" rows={4} placeholder="Describe los atractivos, capacidad, etc..." value={form.description} onChange={handleChange} />
+                <textarea name="description" className="input" rows={4} placeholder="Describe los atractivos, servicios y recomendaciones del lugar..." value={form.description} onChange={handleChange} />
             </div>
 
             {error && <p className="publish-form__error">{error}</p>}
 
             <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={loading}>
-                {loading ? "Enviando..." : `Publicar ${type === "lugar" ? "Lugar" : "Experiencia"} para Aprobación`}
+                {loading ? "Enviando..." : "Publicar Lugar para Aprobación"}
             </button>
 
             <style>{`
@@ -202,7 +192,7 @@ export default function PublishPlaceForm({ type = "lugar" }) {
                 .publish-form__error { background: #FEE2E2; color: #991B1B; padding: 10px 14px; border-radius: var(--radius-sm); font-size: var(--font-size-sm); }
                 .publish-form__img-preview { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
                 .publish-form__img-preview span { font-size: var(--font-size-xs); color: var(--color-text-muted); }
-                .publish-form__img-preview img { width: 100%; max-height: 140px; object-fit: cover; border-radius: var(--radius); border: 1px solid var(--color-border); }
+                .publish-form__img-preview img { width: 100%; height: 260px; object-fit: cover; border-radius: var(--radius); border: 1px solid var(--color-border); }
                 .publish-success { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 48px 24px; text-align: center; }
                 .publish-success h3 { font-size: var(--font-size-xl); font-weight: 700; color: var(--color-text); }
                 .publish-success p { color: var(--color-text-muted); }
@@ -211,4 +201,3 @@ export default function PublishPlaceForm({ type = "lugar" }) {
         </form>
     );
 }
-

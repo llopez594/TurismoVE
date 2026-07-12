@@ -68,6 +68,12 @@ export const Place = sequelize.define(
             allowNull: false,
             defaultValue: 0,
             field: "rating_average"
+        },
+        createdByLabel: {
+            type: DataTypes.STRING(120),
+            allowNull: true,
+            defaultValue: null,
+            field: "created_by_label"
         }
     },
     {

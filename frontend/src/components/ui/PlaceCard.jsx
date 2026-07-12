@@ -2,8 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { MapPin, Star } from "lucide-react";
 
 const DEFAULT_IMAGES = {
-    lugar:     "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800&auto=format&fit=crop",
-    actividad: "https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=800&auto=format&fit=crop"
+    lugar: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800&auto=format&fit=crop"
 };
 
 export default function PlaceCard({ place }) {
@@ -12,8 +11,6 @@ export default function PlaceCard({ place }) {
     const image = place.coverImage || place.cover_image || DEFAULT_IMAGES[place.type] || DEFAULT_IMAGES.lugar;
     const category = place.category?.name || "";
     const rating = parseFloat(place.ratingAverage || place.rating_average || 0);
-    const cost = place.cost ? `$${Number(place.cost).toFixed(0)}` : null;
-    const isExperience = place.type === "actividad";
     const fallback = DEFAULT_IMAGES[place.type] || DEFAULT_IMAGES.lugar;
 
     return (
@@ -31,8 +28,8 @@ export default function PlaceCard({ place }) {
                     </div>
                 )}
                 {category && (
-                    <span className={`place-card__badge ${isExperience ? "badge-exp" : "badge-place"}`}>
-                        {isExperience ? "EXPERIENCIA" : "LUGAR"}
+                    <span className="place-card__badge badge-place">
+                        LUGAR
                     </span>
                 )}
             </div>
@@ -42,11 +39,6 @@ export default function PlaceCard({ place }) {
                     <MapPin size={12} /> {place.location}
                 </p>
                 <h3 className="place-card__title">{place.title}</h3>
-                {cost && (
-                    <p className="place-card__price">
-                        {cost} <span>/{isExperience ? "persona" : "noche"}</span>
-                    </p>
-                )}
                 <button className="btn btn-primary place-card__btn">Explorar</button>
             </div>
 
@@ -62,8 +54,6 @@ export default function PlaceCard({ place }) {
                 .place-card__body { padding: 14px 16px 16px; }
                 .place-card__location { display: flex; align-items: center; gap: 4px; font-size: .75rem; color: var(--color-primary); font-weight: 600; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .04em; }
                 .place-card__title { font-size: var(--font-size-base); font-weight: 700; color: var(--color-text); margin-bottom: 8px; line-height: 1.3; }
-                .place-card__price { font-size: var(--font-size-lg); font-weight: 800; color: var(--color-text); margin-bottom: 12px; }
-                .place-card__price span { font-size: var(--font-size-sm); font-weight: 400; color: var(--color-text-muted); }
                 .place-card__btn { width: 100%; justify-content: center; }
             `}</style>
         </div>
