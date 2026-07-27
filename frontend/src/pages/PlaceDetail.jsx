@@ -222,7 +222,7 @@ export default function PlaceDetail() {
                                         style={{ marginTop: "8px", fontSize: "var(--font-size-sm)" }}
                                         onClick={handleEditReview}
                                     >
-                                        ✏️ Editar mi reseña
+                                         Editar mi reseña
                                     </button>
                                 </div>
                             ) : (isAuthenticated && myReview && !editMode) ? (
