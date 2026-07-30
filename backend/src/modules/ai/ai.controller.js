@@ -10,8 +10,11 @@ import {
     getCategoriesContext
 } from "./catalog-tools.js";
 
+const isGemini = Boolean(process.env.GEMINI_API_KEY);
+
 const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
+    apiKey: process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY,
+    ...(isGemini ? { baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/" } : {})
 });
 
 const SYSTEM_PROMPT = `Eres TurismoVE Assistant, un asistente turístico especializado en Venezuela.
@@ -34,7 +37,7 @@ No recomiendes ni ofrezcas buscar alojamientos, hoteles, posadas o cabañas; Tur
 Nunca respondas con promesas como "voy a buscar", "buscando" o "espera"; entrega el resultado disponible en la misma respuesta.
 En preguntas de seguimiento, resuelve expresiones como "ese", "esa" u "otra" usando el historial antes de preparar los filtros de búsqueda.`;
 
-const MODEL = process.env.OPENAI_AI_MODEL || "gpt-4.1-mini";
+const MODEL = process.env.AI_MODEL || process.env.OPENAI_AI_MODEL || (isGemini ? "gemini-2.5-flash" : "gpt-4.1-mini");
 const CATALOG_INTENT_PATTERN = /\b(recom(?:ienda|endar)|mu[eé]strame|mostrar|qu[eé] (?:puedo|podemos) hacer|qu[eé] hay|hay|planes?|hacer en|llanos?|regiones?|lugares?|sitios?|destinos?|playas?|montañas?|actividades?|experiencias?|visitar|d[oó]nde|ubicaci[oó]n|direcci[oó]n|horarios?|servicios?|precios?|costos?|puntuaci[oó]n|calificaci[oó]n|otr[oa]s?|adem[aá]s)\b/i;
 const CATALOG_FOLLOW_UP_PATTERN = /\b(es[aeo]|cu[aá]l|all[ií]|ah[ií]|m[aá]s|informaci[oó]n)\b/i;
 const ALTERNATIVE_PATTERN = /\b(otr[oa]s?|adem[aá]s|diferente|m[aá]s opciones?)\b/i;
